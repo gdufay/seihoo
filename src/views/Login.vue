@@ -25,8 +25,6 @@
 </template>
 
 <script>
-import Parse from "parse/dist/parse.min.js";
-
 export default {
   name: "Login",
 
@@ -51,7 +49,7 @@ export default {
     onSubmit() {
       this.$refs["form"].validate((valid) => {
         if (valid) {
-          Parse.User.logIn(this.form.username, this.form.password)
+          this.$Parse.User.logIn(this.form.username, this.form.password)
             .then(() => this.$router.replace("/"))
             .catch((e) => {
               console.log("Error logging in: " + e.message);
