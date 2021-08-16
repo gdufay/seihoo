@@ -1,25 +1,23 @@
 <template>
-  <el-form ref="form" :model="form" :rules="rules">
+  <el-form ref="form" :model="form" :rules="rules" v-loading="loading">
     <h1 class="form-header">Please sign in</h1>
 
-    <el-form-item prop="username">
-      <el-input
-        v-model.trim="form.username"
-        placeholder="Username"
-        required
-      ></el-input>
+    <el-form-item prop="username" :error="loginError">
+      <el-input v-model.trim="form.username" placeholder="Username"></el-input>
     </el-form-item>
-    <el-form-item prop="password">
+    <el-form-item prop="password" :error="loginError">
       <el-input
         v-model.trim="form.password"
         placeholder="Password"
+        type="password"
+        autocomplete="off"
         show-password
       ></el-input>
     </el-form-item>
 
     <el-form-item>
-      <el-button type="primary" @click="onSubmit">Signin</el-button>
-      <el-button @click="onCancel">Cancel</el-button>
+      <el-button type="primary" @click="onSubmit('form')">Signin</el-button>
+      <el-button @click="onCancel('form')">Cancel</el-button>
     </el-form-item>
   </el-form>
 </template>
@@ -30,38 +28,45 @@ export default {
 
   data() {
     return {
+      loading: false,
       form: {
         username: "",
         password: "",
       },
+      loginError: "",
       rules: {
-        username: [
-          { required: true, message: "Please input username", trigger: "blur" },
-        ],
-        password: [
-          { required: true, message: "Please input password", trigger: "blur" },
-        ],
+        username: {
+          required: true,
+          message: "Please input username",
+          trigger: "blur",
+        },
+        password: {
+          required: true,
+          message: "Please input password",
+          trigger: "blur",
+        },
       },
     };
   },
 
   methods: {
-    onSubmit() {
-      this.$refs["form"].validate((valid) => {
+    onSubmit(formName) {
+      this.$refs[formName].validate((valid) => {
         if (valid) {
+          this.loading = true;
           this.$Parse.User.logIn(this.form.username, this.form.password)
             .then(() => this.$router.replace("/"))
             .catch((e) => {
-              console.log("Error logging in: " + e.message);
-              // TODO: show Dialog when catch error
+              this.loginError = "";
+              this.loginError = e.message;
+              this.loading = false;
             });
         }
       });
     },
 
-    onCancel() {
-      console.log("onCancel");
-      this.$refs["form"].resetFields();
+    onCancel(formName) {
+      this.$refs[formName].resetFields();
     },
   },
 };
