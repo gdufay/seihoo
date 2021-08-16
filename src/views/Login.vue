@@ -25,8 +25,10 @@
 </template>
 
 <script>
+import Parse from "parse/dist/parse.min.js";
+
 export default {
-  name: "LoginComponent",
+  name: "Login",
 
   data() {
     return {
@@ -49,14 +51,12 @@ export default {
     onSubmit() {
       this.$refs["form"].validate((valid) => {
         if (valid) {
-          console.log("on submit");
-          // Parse.User.logIn(this.form.username, this.form.password)
-          // .then(() => this.$router.replace("/"))
-          // .catch((e) => console.log("Error logging in: " + e.message))
-          // TODO: show Dialog when catch error
-        } else {
-          console.log("error submit!!");
-          return false;
+          Parse.User.logIn(this.form.username, this.form.password)
+            .then(() => this.$router.replace("/"))
+            .catch((e) => {
+              console.log("Error logging in: " + e.message);
+              // TODO: show Dialog when catch error
+            });
         }
       });
     },
@@ -71,12 +71,12 @@ export default {
 
 <style>
 .el-form {
-    width: 100%;
-    max-width: 330px;
-    margin: auto;
+  width: 100%;
+  max-width: 330px;
+  margin: auto;
 }
 
 .form-header {
-    margin-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 </style>

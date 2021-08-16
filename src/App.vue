@@ -1,18 +1,13 @@
 <template>
   <el-main class="flex">
-    <login-component></login-component>
+    <router-view></router-view>
   </el-main>
   <el-footer>Made by Gaëtan</el-footer>
 </template>
 
 <script>
-import LoginComponent from "./components/Login.vue";
-
 export default {
   name: "App",
-  components: {
-    LoginComponent,
-  },
 };
 </script>
 
