@@ -1,34 +1,41 @@
 <template>
-  <img src="./assets/logo.png">
-  <div>
-    <p>
-      If Element Plus is successfully added to this project, you'll see an
-      <code v-text="'<el-button>'"></code>
-      below
-    </p>
-    <el-button type="primary">el-button</el-button>
-  </div>
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <el-main class="flex">
+    <login-component></login-component>
+  </el-main>
+  <el-footer>Made by Gaëtan</el-footer>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import LoginComponent from "./components/Login.vue";
 
 export default {
-  name: 'App',
+  name: "App",
   components: {
-    HelloWorld
-  }
-}
+    LoginComponent,
+  },
+};
 </script>
 
 <style>
+/* TODO: normalize browser */
+* {
+  margin: 0;
+  padding: 0;
+}
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f5f5f5;
+}
+
+.el-main.flex {
+  display: flex;
 }
 </style>
