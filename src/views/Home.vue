@@ -21,6 +21,20 @@
     >
       {{ ingredient.get("name") }}
     </el-tag>
+
+    <el-input
+      class="input-new-tag"
+      v-if="inputVisible"
+      v-model="inputValue"
+      ref="saveTagInput"
+      size="mini"
+      @keyup.enter="handleInputConfirm"
+      @blur="handleInputConfirm"
+    >
+    </el-input>
+    <el-button v-else class="button-new-tag" size="small" @click="showInput"
+      >+ New Ingredient</el-button
+    >
   </el-card>
 
   <el-card class="column-card">
@@ -47,7 +61,10 @@ export default {
   name: "Home",
 
   data() {
-    return {};
+    return {
+      inputVisible: false,
+      inputValue: "",
+    };
   },
 
   computed: {
@@ -83,9 +100,41 @@ export default {
           )
         );
     },
+
+    showInput() {
+      this.inputVisible = true;
+      this.$nextTick(() => {
+        this.$refs.saveTagInput.$refs.input.focus();
+      });
+    },
+
+    handleInputConfirm() {
+      const ingredientName = this.inputValue.trim();
+
+      if (ingredientName) {
+        this.$store.dispatch("addIngredient", ingredientName);
+      }
+      this.inputVisible = false;
+      this.inputValue = "";
+    },
   },
 };
 </script>
 
 <style>
+.el-tag + .el-tag {
+  margin-left: 10px;
+}
+.button-new-tag {
+  margin-left: 10px;
+  height: 32px;
+  line-height: 30px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.input-new-tag {
+  width: 90px;
+  margin-left: 10px;
+  vertical-align: bottom;
+}
 </style>

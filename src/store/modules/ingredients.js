@@ -30,6 +30,15 @@ const actions = {
                 })
         })
     },
+
+    addIngredient({ commit }, ingredientName) {
+        const newIngredient = new Parse.Object("Ingredient");
+
+        newIngredient.set("name", ingredientName);
+        newIngredient.save()
+            .then(result => commit("addIngredient", result))
+            .catch(e => console.error(e)); // TODO: propagate error
+    }
 }
 
 const mutations = {
@@ -43,6 +52,10 @@ const mutations = {
         if (index !== -1)
             state.ingredients.splice(index, 1);
     },
+
+    addIngredient(state, ingredient) {
+        state.ingredients.push(ingredient);
+    }
 }
 
 export default {
