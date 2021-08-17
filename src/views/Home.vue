@@ -19,7 +19,7 @@
       closable
       @close="removeIngredient(ingredient)"
     >
-      {{ ingredient.name }}
+      {{ ingredient.get("name") }}
     </el-tag>
   </el-card>
 
@@ -41,33 +41,47 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
+
 export default {
   name: "Home",
 
   data() {
-    return {
-      ingredients: [{ name: "water" }, { name: "milk" }],
-    };
+    return {};
+  },
+
+  computed: {
+    ...mapState({
+      ingredients: (state) => state.ingredients.ingredients,
+    }),
   },
 
   mounted() {
-    /*
-    const query = new this.$Parse.Query("Ingredient");
-    query
-      .select("name")
-      .find()
-      .then((results) => {
-        console.log(`ParseObjects found: ${JSON.stringify(results)}`);
-      })
-      .catch((error) => {
-        console.log(`Error: ${JSON.stringify(error)}`);
-      });
-      */
+    this.$store.dispatch("getAllIngredients");
   },
 
   methods: {
     removeIngredient(ingredient) {
-      console.log("Removing ingredient", ingredient);
+      this.$confirm(
+        "This will permanently delete the ingredient. Continue?",
+        "Warning",
+        {
+          confirmButtonText: "OK",
+          cancelButtonText: "Cancel",
+          type: "warning",
+        }
+      )
+        .then(() => this.$store.dispatch("removeIngredient", ingredient))
+        .then(() =>
+          this.$message({ type: "success", message: "Delete completed" })
+        )
+        .catch((e) =>
+          this.$message(
+            e === "cancel"
+              ? { type: "info", message: "Delete canceled" }
+              : { type: "error", message: e.message }
+          )
+        );
     },
   },
 };
