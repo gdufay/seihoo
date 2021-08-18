@@ -50,7 +50,9 @@ export default {
   },
 
   mounted() {
-    this.$store.dispatch("getAllIngredients");
+    if (this.ingredients.length === 0) {
+      this.$store.dispatch("getAllIngredients");
+    }
   },
 
   methods: {
