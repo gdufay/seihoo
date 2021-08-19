@@ -13,8 +13,9 @@
         </div>
       </template>
       <ul>
-        <li v-for="ingredient in recipe.get('ingredients')" :key="ingredient">
-          {{ ingredient.get("name") }}
+        <li v-for="{ ingredient, quantity } in recipe.get('ingredients')" :key="ingredient">
+          <!-- Ingredient : {{ ingredient.get("name") }} -->
+          Quantity: {{ quantity }}
         </li>
       </ul>
 
@@ -37,18 +38,22 @@ export default {
   },
 
   mounted() {
-    // this.$store.dispatch("getAllRecipes");
+    // TODO: move to root component
+    // TODO: do it for IngredientList too
+    if (this.recipes.length === 0) {
+      this.$store.dispatch("getAllRecipes");
+    }
   },
 
   methods: {
-      editRecipe(recipe) {
-          console.log("Editing recipe:", recipe);
-      },
+    editRecipe(recipe) {
+      this.$router.push("/edit/" + recipe.id);
+    },
 
-      removeRecipe(recipe) {
-          console.log("Removing recipe:", recipe);
-      },
-  }
+    removeRecipe(recipe) {
+      console.log("Removing recipe:", recipe);
+    },
+  },
 };
 </script>
 

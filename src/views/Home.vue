@@ -1,7 +1,7 @@
 <template>
   <recipe-list class="column-card"></recipe-list>
 
-  <!--ingredient-list class="column-card"></ingredient-list-->
+  <ingredient-list class="column-card"></ingredient-list>
 
   <el-card class="column-card">
     <template #header>
@@ -21,14 +21,14 @@
 </template>
 
 <script>
-// import IngredientList from "../components/IngredientList.vue";
+import IngredientList from "../components/IngredientList.vue";
 import RecipeList from "../components/RecipeList.vue";
 
 export default {
   name: "Home",
 
   components: {
-    // IngredientList,
+    IngredientList,
     RecipeList,
   },
 
