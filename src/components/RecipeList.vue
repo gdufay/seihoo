@@ -6,21 +6,22 @@
       </div>
     </template>
 
-    <el-card v-for="recipe in recipes" :key="recipe">
+    <el-card v-for="recipe in recipes" :key="recipe.get('name')">
       <template #header>
         <div class="card-header">
           {{ recipe.get("name") }}
         </div>
       </template>
-      <ul>
-        <li
+
+      <div class="ingredients-container">
+        <ingredient-item
           v-for="{ ingredient, quantity } in recipe.get('ingredients')"
-          :key="ingredient"
-        >
-          <!-- Ingredient : {{ ingredient.get("name") }} -->
-          Quantity: {{ quantity }}
-        </li>
-      </ul>
+          :key="ingredient.get('name')"
+          :name="ingredient.get('name')"
+          :quantity="quantity"
+          :unit="ingredient.get('unit').get('name')"
+        ></ingredient-item>
+      </div>
 
       <el-button @click="editRecipe(recipe)">Edit</el-button>
       <el-button @click="removeRecipe(recipe)">Remove</el-button>
@@ -30,9 +31,14 @@
 
 <script>
 import { mapState } from "vuex";
+import IngredientItem from "./IngredientItem.vue";
 
 export default {
   name: "recipe-list",
+
+  components: {
+    IngredientItem,
+  },
 
   computed: {
     ...mapState({
