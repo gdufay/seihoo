@@ -3,13 +3,7 @@
 
   <ingredient-list class="column-card"></ingredient-list>
 
-  <el-card class="column-card">
-    <template #header>
-      <div class="card-header">
-        <span>Selected recipes</span>
-      </div>
-    </template>
-  </el-card>
+  <selected-recipe-list class="column-card"></selected-recipe-list>
 
   <el-card class="column-card">
     <template #header>
@@ -23,6 +17,7 @@
 <script>
 import IngredientList from "../components/IngredientList.vue";
 import RecipeList from "../components/RecipeList.vue";
+import SelectedRecipeList from "../components/SelectedRecipeList.vue";
 
 export default {
   name: "Home",
@@ -30,6 +25,7 @@ export default {
   components: {
     IngredientList,
     RecipeList,
+    SelectedRecipeList,
   },
 
   data() {
