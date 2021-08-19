@@ -45,5 +45,11 @@ export default {
 </script>
 
 <style>
+.column-card {
+  width: 25%;
+}
+
+.column-card:not(:last-child) {
+  margin-right: 1rem;
+}
 </style>
-    IngredientList
