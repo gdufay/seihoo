@@ -10,6 +10,13 @@ export default createStore({
 
   plugins: debug ? [createLogger()] : [],
 
+  actions: {
+    async initApp({ dispatch }) {
+      return dispatch("getAllRecipes")
+      .then(() => dispatch("getAllIngredients"));
+    }
+  },
+
   modules: {
     ingredients,
     recipes,

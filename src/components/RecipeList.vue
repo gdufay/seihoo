@@ -13,7 +13,10 @@
         </div>
       </template>
       <ul>
-        <li v-for="{ ingredient, quantity } in recipe.get('ingredients')" :key="ingredient">
+        <li
+          v-for="{ ingredient, quantity } in recipe.get('ingredients')"
+          :key="ingredient"
+        >
           <!-- Ingredient : {{ ingredient.get("name") }} -->
           Quantity: {{ quantity }}
         </li>
@@ -35,14 +38,6 @@ export default {
     ...mapState({
       recipes: (state) => state.recipes.recipes,
     }),
-  },
-
-  mounted() {
-    // TODO: move to root component
-    // TODO: do it for IngredientList too
-    if (this.recipes.length === 0) {
-      this.$store.dispatch("getAllRecipes");
-    }
   },
 
   methods: {
