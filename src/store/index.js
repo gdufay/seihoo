@@ -1,6 +1,7 @@
 import { createLogger, createStore } from 'vuex'
 import ingredients from "./modules/ingredients"
 import recipes from './modules/recipes'
+import editedRecipe from "./modules/editedRecipe"
 
 const debug = process.env.NODE_ENV !== "production"
 
@@ -12,5 +13,6 @@ export default createStore({
   modules: {
     ingredients,
     recipes,
+    editedRecipe,
   }
 })
