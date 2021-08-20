@@ -8,10 +8,10 @@
 <script>
 export default {
   name: "App",
-  
+
   mounted() {
     this.$store.dispatch("initApp");
-  }
+  },
 };
 </script>
 
@@ -31,7 +31,8 @@ export default {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: #f5f5f5;
+  background: url("https://trello-backgrounds.s3.amazonaws.com/SharedBackground/2048x2048/f5c6b75374f1c8a0af2568dbc90a4149/photo-1519506123986-6e0397dcd754.jpg")
+    no-repeat fixed center;
 }
 
 .el-main.flex {

@@ -1,7 +1,7 @@
 <template>
   <el-card>
     <template #header>
-      <div class="card-header">
+      <div class="card-header column-header">
         <span>Selected Recipes</span>
       </div>
     </template>

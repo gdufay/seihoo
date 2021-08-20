@@ -43,9 +43,20 @@ export default {
 <style>
 .column-card {
   width: 25%;
+  background-color: #ebecf0;
+  display: flex;
+  flex-direction: column;
+  margin-right: 1rem;
 }
 
-.column-card:not(:last-child) {
-  margin-right: 1rem;
+.column-header {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 </style>
