@@ -1,30 +1,36 @@
 <template>
   <el-card>
-    <template #header>
-      <div class="card-header column-header">
-        <span>Selected Recipes</span>
-      </div>
-    </template>
+    <div class="card-header column-header">
+      <span>Selected Recipes</span>
+    </div>
 
     <recipe-item
       v-for="recipe in recipes"
       :key="recipe.get('name')"
       :recipe="recipe"
+      :actions="actions"
+      @menuAction="handleMenuAction"
     >
-      <template #footer="{ item }">
-        <el-button @click="unselectRecipe(item)">Unselect</el-button>
-      </template>
     </recipe-item>
   </el-card>
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapMutations, mapState } from "vuex";
 import RecipeItem from "./RecipeItem.vue";
+
+const UNSELECT_RECIPE = "unselect";
+
 export default {
   name: "selected-recipe-list",
 
   components: { RecipeItem },
+
+  data() {
+    return {
+      actions: [{ id: UNSELECT_RECIPE, text: "Unselect" }],
+    };
+  },
 
   computed: {
     ...mapState({
@@ -33,8 +39,17 @@ export default {
   },
 
   methods: {
-    unselectRecipe(recipe) {
-      console.log("Unselecting recipe", recipe);
+    ...mapMutations(["unselectRecipe"]),
+
+    handleMenuAction({ action, recipe }) {
+      switch (action) {
+        case UNSELECT_RECIPE:
+          this.unselectRecipe(recipe);
+          break;
+        default:
+          console.error("Unknown action:", action);
+          break;
+      }
     },
   },
 };

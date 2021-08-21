@@ -1,5 +1,6 @@
 <template>
   <el-card class="recipe-item">
+    <template #header>
     <div class="card-header item-name">
       <span>{{ recipe.get("name") }}</span>
 
@@ -17,6 +18,7 @@
         </template>
       </el-dropdown>
     </div>
+    </template>
 
     <div class="ingredients-container">
       <ingredient-item
@@ -61,7 +63,7 @@ export default {
   methods: {
     // TODO: quickfixe, change
     unitNameOrNothing(ingredient) {
-      let name = "";
+      let name;
 
       try {
         name = ingredient.get("unit").get("name");
@@ -69,7 +71,7 @@ export default {
         console.error(e.message);
       }
 
-      return name;
+      return name || "";
     },
 
     handleCommand(command) {

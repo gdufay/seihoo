@@ -12,18 +12,13 @@
         :actions="actions"
         @menuAction="handleMenuAction"
       >
-        <template #dropdownMenu="{ item }">
-          <el-button @click="selectRecipe(item)">Select</el-button>
-          <el-button @click="editRecipe(item)">Edit</el-button>
-          <el-button @click="removeRecipe(item)">Remove</el-button>
-        </template>
       </recipe-item>
     </el-scrollbar>
   </el-card>
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapMutations, mapState } from "vuex";
 import RecipeItem from "./RecipeItem.vue";
 
 const SELECT_ACTION = "select";
@@ -52,6 +47,8 @@ export default {
   },
 
   methods: {
+    ...mapMutations(["selectRecipe"]),
+
     handleMenuAction({ action, recipe }) {
       switch (action) {
         case SELECT_ACTION:
@@ -74,10 +71,6 @@ export default {
 
     removeRecipe(recipe) {
       console.log("Removing recipe:", recipe);
-    },
-
-    selectRecipe(recipe) {
-      console.log("Selection recipe:", recipe);
     },
   },
 };
