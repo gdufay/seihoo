@@ -1,47 +1,27 @@
 <template>
   <el-card>
-    <template #header>
-      <div class="card-header column-header">
-        <span>Ingredients</span>
-      </div>
-    </template>
-    <el-tag
-      v-for="ingredient in ingredients"
-      :key="ingredient"
-      closable
-      @close="removeIngredient(ingredient)"
-    >
-      {{ ingredient.get("name") }}
-    </el-tag>
+    <div class="card-header column-header">
+      <span>Ingredients</span>
+    </div>
 
-    <el-input
-      class="input-new-tag"
-      v-if="inputVisible"
-      v-model="inputValue"
-      ref="saveTagInput"
-      size="mini"
-      @keyup.enter="handleInputConfirm"
-      @blur="handleInputConfirm"
-    >
-    </el-input>
-    <el-button v-else class="button-new-tag" size="small" @click="showInput"
-      >+ New Ingredient
-    </el-button>
+    <el-scrollbar>
+      <ingredient
+        v-for="ingredient in ingredients"
+        :key="ingredient.id"
+        :ingredient="ingredient"
+      ></ingredient>
+    </el-scrollbar>
   </el-card>
 </template>
 
 <script>
 import { mapState } from "vuex";
+import Ingredient from "./Ingredient.vue";
 
 export default {
   name: "ingredient-list",
 
-  data() {
-    return {
-      inputVisible: false,
-      inputValue: "",
-    };
-  },
+  components: { Ingredient },
 
   computed: {
     ...mapState({
@@ -50,6 +30,7 @@ export default {
   },
 
   methods: {
+    /*
     removeIngredient(ingredient) {
       this.$confirm(
         "This will permanently delete the ingredient. Continue?",
@@ -72,41 +53,13 @@ export default {
           )
         );
     },
-
-    showInput() {
-      this.inputVisible = true;
-      this.$nextTick(() => {
-        this.$refs.saveTagInput.$refs.input.focus();
-      });
-    },
-
-    handleInputConfirm() {
-      const ingredientName = this.inputValue.trim();
-
-      if (ingredientName) {
-        this.$store.dispatch("addIngredient", ingredientName);
-      }
-      this.inputVisible = false;
-      this.inputValue = "";
-    },
+    */
   },
 };
 </script>
 
 <style>
-.el-tag + .el-tag {
-  margin-left: 10px;
-}
-.button-new-tag {
-  margin-left: 10px;
-  height: 32px;
-  line-height: 30px;
-  padding-top: 0;
-  padding-bottom: 0;
-}
-.input-new-tag {
-  width: 90px;
-  margin-left: 10px;
-  vertical-align: bottom;
+.ingredient {
+  margin: 1rem 0;
 }
 </style>

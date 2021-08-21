@@ -37,5 +37,6 @@ export default {
 
 .el-main.flex {
   display: flex;
+  justify-content: center;
 }
 </style>

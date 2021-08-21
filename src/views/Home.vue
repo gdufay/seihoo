@@ -42,7 +42,8 @@ export default {
 
 <style>
 .column-card {
-  width: 25%;
+  width: 350px;
+  min-width: 350px;
   background-color: #ebecf0;
   display: flex;
   flex-direction: column;
@@ -52,6 +53,7 @@ export default {
 .column-header {
   font-weight: 600;
   font-size: 14px;
+  margin: 1rem 0;
 }
 
 .card-header {
