@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import { mapMutations, mapState } from "vuex";
+import { mapActions, mapMutations, mapState } from "vuex";
 import RecipeItem from "./RecipeItem.vue";
 
 const SELECT_ACTION = "select";
@@ -49,6 +49,8 @@ export default {
   methods: {
     ...mapMutations(["selectRecipe"]),
 
+    ...mapActions(["removeRecipe"]),
+
     handleMenuAction({ action, recipe }) {
       switch (action) {
         case SELECT_ACTION:
@@ -67,10 +69,6 @@ export default {
 
     editRecipe(recipe) {
       this.$router.push("/edit/" + recipe.id);
-    },
-
-    removeRecipe(recipe) {
-      console.log("Removing recipe:", recipe);
     },
   },
 };
