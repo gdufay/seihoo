@@ -159,12 +159,26 @@ export default {
 		},
 
 		handleEditConfirm() {
-			this.$store.dispatch("editIngredient", {
-				ingredient: this.ingredient,
-				name: this.form.name,
-				unit: this.form.unit,
-			});
-			this.formVisible = false;
+			this.$store
+				.dispatch("editIngredient", {
+					ingredient: this.ingredient,
+					name: this.form.name,
+					unit: this.form.unit,
+				})
+				.then(() =>
+					this.$message({
+						type: "success",
+						message: "Edit success",
+					})
+				)
+				.catch((e) => {
+					this.$messgae({
+						type: "error",
+						message: "Ohoh... A problem occured",
+					});
+					console.error(e);
+				})
+				.finally(() => (this.formVisible = false));
 		},
 
 		remove() {

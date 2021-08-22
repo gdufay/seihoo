@@ -37,7 +37,7 @@ const actions = {
 		newIngredient
 			.save()
 			.then((result) => commit("addIngredient", result))
-			.catch((e) => console.error(e)); // TODO: propagate error
+			.catch((e) => console.error(e)); // TODO: propagate result
 	},
 
 	editIngredient({ commit }, { ingredient, name, unit }) {
@@ -46,10 +46,9 @@ const actions = {
 		newIngredient.id = ingredient.id;
 		newIngredient.set("name", name);
 		newIngredient.set("unit", unit);
-		newIngredient
+		return newIngredient
 			.save()
-			.then((result) => commit("editIngredient", result))
-			.catch((e) => console.error(e)); // TODO: propagate error
+			.then((result) => commit("editIngredient", result));
 	},
 };
 
