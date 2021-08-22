@@ -174,7 +174,8 @@ export default {
 				.catch((e) => {
 					this.$messgae({
 						type: "error",
-						message: "Ohoh... A problem occured",
+						message:
+							"Ohoh... A problem occured",
 					});
 					console.error(e);
 				})
@@ -182,7 +183,22 @@ export default {
 		},
 
 		remove() {
-			console.log("removing");
+			this.$store
+				.dispatch("removeIngredient", this.ingredient)
+				.then(() =>
+					this.$message({
+						type: "success",
+						message: "Removing successful",
+					})
+				)
+				.catch((e) => {
+					this.$messgae({
+						type: "error",
+						message:
+							"Ohoh... A problem occured",
+					});
+					console.error(e);
+				});
 		},
 	},
 };

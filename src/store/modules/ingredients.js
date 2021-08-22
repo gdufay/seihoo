@@ -16,18 +16,9 @@ const actions = {
 	},
 
 	removeIngredient({ commit }, ingredient) {
-		return new Promise((resolve, reject) => {
-			ingredient
-				.destroy()
-				.then(() => {
-					commit("removeIngredient", ingredient);
-					resolve();
-				})
-				.catch((e) => {
-					console.error(e);
-					reject();
-				});
-		});
+		return ingredient
+			.destroy()
+			.then(() => commit("removeIngredient", ingredient));
 	},
 
 	addIngredient({ commit }, ingredientName) {
