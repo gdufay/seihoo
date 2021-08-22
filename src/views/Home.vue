@@ -44,7 +44,6 @@ export default {
 .column-card {
   width: 350px;
   min-width: 350px;
-  background-color: #ebecf0;
   display: flex;
   flex-direction: column;
   margin-right: 1rem;
