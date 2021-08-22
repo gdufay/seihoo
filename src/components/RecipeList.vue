@@ -4,48 +4,81 @@
       <span>Recipes</span>
     </div>
 
-    <el-scrollbar style="height: 0;">
-      <recipe-item
-        v-for="recipe in recipes"
-        :key="recipe.get('name')"
-        :recipe="recipe"
-        :actions="actions"
-        @menuAction="handleMenuAction"
-      >
-      </recipe-item>
+    <el-scrollbar style="height: 0">
+      <el-collapse v-model="activeRecipes">
+        <el-collapse-item
+          v-for="recipe in recipes"
+          :key="recipe.id"
+          :title="recipe.get('name')"
+        >
+          <ingredient-item
+            v-for="{ ingredient, quantity } in recipe.get('ingredients')"
+            :key="ingredient.id"
+            :name="ingredient.get('name')"
+            :quantity="quantity"
+            :unit="unitNameOrNothing(ingredient)"
+          ></ingredient-item>
+
+          <div class="button-group__container">
+            <el-button-group>
+              <el-tooltip content="Select">
+                <el-button
+                  type="primary"
+                  @click="selectRecipe(recipe)"
+                  size="mini"
+                  plain
+                  icon="el-icon-check"
+                ></el-button>
+              </el-tooltip>
+              <el-tooltip content="Edit">
+                <el-button
+                  type="primary"
+                  @click="editRecipe(recipe)"
+                  size="mini"
+                  plain
+                  icon="el-icon-edit"
+                ></el-button>
+              </el-tooltip>
+              <el-tooltip content="Remove">
+                <el-button
+                  type="primary"
+                  @click="removeRecipe(recipe)"
+                  size="mini"
+                  plain
+                  icon="el-icon-delete"
+                ></el-button>
+              </el-tooltip>
+            </el-button-group>
+          </div>
+        </el-collapse-item>
+      </el-collapse>
     </el-scrollbar>
 
     <div class="card__bottom">
-      <el-button
-        type="success"
-        @click="add"
-        icon="el-icon-plus"
-        circle
-      ></el-button>
+      <el-tooltip content="Add recipe">
+        <el-button
+          type="success"
+          @click="add"
+          icon="el-icon-plus"
+          circle
+        ></el-button>
+      </el-tooltip>
     </div>
   </el-card>
 </template>
 
 <script>
 import { mapActions, mapMutations, mapState } from "vuex";
-import RecipeItem from "./RecipeItem.vue";
-
-const SELECT_ACTION = "select";
-const EDIT_ACTION = "edit";
-const REMOVE_ACTION = "remove";
+import IngredientItem from "./IngredientItem.vue";
 
 export default {
   name: "recipe-list",
 
-  components: { RecipeItem },
+  components: { IngredientItem },
 
   data() {
     return {
-      actions: [
-        { id: SELECT_ACTION, text: "Select" },
-        { id: EDIT_ACTION, text: "Edit" },
-        { id: REMOVE_ACTION, text: "Remove" },
-      ],
+      activeRecipes: [],
     };
   },
 
@@ -60,22 +93,6 @@ export default {
 
     ...mapActions(["removeRecipe"]),
 
-    handleMenuAction({ action, recipe }) {
-      switch (action) {
-        case SELECT_ACTION:
-          this.selectRecipe(recipe);
-          break;
-        case EDIT_ACTION:
-          this.editRecipe(recipe);
-          break;
-        case REMOVE_ACTION:
-          this.removeRecipe(recipe);
-          break;
-        default:
-          console.error("Unknown action", action);
-      }
-    },
-
     editRecipe(recipe) {
       this.$router.push("/edit/" + recipe.id);
     },
@@ -83,9 +100,34 @@ export default {
     add() {
       this.$router.push("/new");
     },
+
+    // TODO: quickfixe, change
+    unitNameOrNothing(ingredient) {
+      let name;
+
+      try {
+        name = ingredient.get("unit").get("name");
+      } catch (e) {
+        console.error(e.message);
+      }
+
+      return name || "";
+    },
   },
 };
 </script>
 
 <style>
+.el-collapse-item__header {
+  padding: 0.25rem 0.5rem;
+}
+
+.el-collapse-item__content {
+  padding: 0.5rem;
+}
+
+.button-group__container {
+  text-align: end;
+  margin-top: 0.5rem;
+}
 </style>
