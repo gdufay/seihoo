@@ -13,12 +13,14 @@
     </el-scrollbar>
 
     <div class="card__bottom">
-      <el-button
-        type="success"
-        @click="add"
-        icon="el-icon-plus"
-        circle
-      ></el-button>
+      <el-tooltip content="Add ingredient">
+        <el-button
+          type="success"
+          @click="add"
+          icon="el-icon-plus"
+          circle
+        ></el-button>
+      </el-tooltip>
     </div>
   </el-card>
 </template>
@@ -89,5 +91,6 @@ export default {
 
 .card__bottom {
   text-align: end;
+  margin-top: 0.5rem;
 }
 </style>
