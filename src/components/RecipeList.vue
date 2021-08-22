@@ -4,7 +4,7 @@
       <span>Recipes</span>
     </div>
 
-    <el-scrollbar>
+    <el-scrollbar style="height: 0;">
       <recipe-item
         v-for="recipe in recipes"
         :key="recipe.get('name')"
@@ -14,6 +14,15 @@
       >
       </recipe-item>
     </el-scrollbar>
+
+    <div class="card__bottom">
+      <el-button
+        type="success"
+        @click="add"
+        icon="el-icon-plus"
+        circle
+      ></el-button>
+    </div>
   </el-card>
 </template>
 
@@ -69,6 +78,10 @@ export default {
 
     editRecipe(recipe) {
       this.$router.push("/edit/" + recipe.id);
+    },
+
+    add() {
+      this.$router.push("/new");
     },
   },
 };

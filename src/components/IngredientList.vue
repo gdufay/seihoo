@@ -1,26 +1,26 @@
 <template>
-	<el-card>
-		<div class="card-header column-header">
-			<span>Ingredients</span>
-		</div>
+  <el-card>
+    <div class="card-header column-header">
+      <span>Ingredients</span>
+    </div>
 
-		<el-scrollbar style="height: auto">
-			<ingredient
-				v-for="ingredient in ingredients"
-				:key="ingredient.id"
-				:ingredient="ingredient"
-			></ingredient>
-		</el-scrollbar>
+    <el-scrollbar style="height: 0">
+      <ingredient
+        v-for="ingredient in ingredients"
+        :key="ingredient.id"
+        :ingredient="ingredient"
+      ></ingredient>
+    </el-scrollbar>
 
-		<div class="card__bottom">
-			<el-button
-				type="success"
-				@click="add"
-				icon="el-icon-plus"
-				circle
-			></el-button>
-		</div>
-	</el-card>
+    <div class="card__bottom">
+      <el-button
+        type="success"
+        @click="add"
+        icon="el-icon-plus"
+        circle
+      ></el-button>
+    </div>
+  </el-card>
 </template>
 
 <script>
@@ -28,18 +28,18 @@ import { mapState } from "vuex";
 import Ingredient from "./Ingredient.vue";
 
 export default {
-	name: "ingredient-list",
+  name: "ingredient-list",
 
-	components: { Ingredient },
+  components: { Ingredient },
 
-	computed: {
-		...mapState({
-			ingredients: (state) => state.ingredients.ingredients,
-		}),
-	},
+  computed: {
+    ...mapState({
+      ingredients: (state) => state.ingredients.ingredients,
+    }),
+  },
 
-	methods: {
-		/*
+  methods: {
+    /*
     removeIngredient(ingredient) {
       this.$confirm(
         "This will permanently delete the ingredient. Continue?",
@@ -64,29 +64,30 @@ export default {
     },
     */
 
-		add() {
-			console.log("Adding ingredient");
-			// TODO: unshift, set editable mode and give focus
-		},
-	},
+    add() {
+      console.log("Adding ingredient");
+      // TODO: unshift, set editable mode and give focus
+    },
+  },
 };
 </script>
 
 <style>
 .ingredient {
-	margin: 1rem 0;
+  margin: 1rem 0;
 }
 
-.el-card__body, .el-scrollbar {
-	flex: 1 0 auto;
+.el-card__body,
+.el-scrollbar {
+  flex: 1 0 auto;
 }
 
 .el-card__body {
-	display: flex;
-	flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .card__bottom {
-	text-align: end;
+  text-align: end;
 }
 </style>
