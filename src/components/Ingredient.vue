@@ -1,111 +1,212 @@
 <template>
-  <div class="ingredient">
-    <el-avatar class="ingredient__avatar" icon="el-icon-food"></el-avatar>
+	<div class="ingredient">
+		<el-avatar
+			class="ingredient__avatar"
+			icon="el-icon-food"
+		></el-avatar>
 
-    <div class="ingredient__text">
-      <p class="ingredient__primary-text">{{ name }}</p>
-      <p class="ingredient__secondary-text">{{ unit }}</p>
-    </div>
+		<template v-if="!formVisible">
+			<div class="ingredient__text">
+				<p class="ingredient__primary-text">
+					{{ name }}
+				</p>
+				<p class="ingredient__secondary-text">
+					{{ unitName }}
+				</p>
+			</div>
 
-    <el-dropdown trigger="click" @command="handleCommand">
-      <el-icon class="ingredient__meta">
-        <more-filled />
-      </el-icon>
+			<el-dropdown trigger="click" @command="handleCommand">
+				<el-icon class="ingredient__meta">
+					<more-filled />
+				</el-icon>
 
-      <template #dropdown>
-        <el-dropdown-menu>
-          <el-dropdown-item :command="EDIT_COMMAND">Edit</el-dropdown-item>
-          <el-dropdown-item :command="REMOVE_COMMAND">Remove</el-dropdown-item>
-        </el-dropdown-menu>
-      </template>
-    </el-dropdown>
-  </div>
+				<template #dropdown>
+					<el-dropdown-menu>
+						<el-dropdown-item
+							:command="EDIT_COMMAND"
+							>Edit</el-dropdown-item
+						>
+						<el-dropdown-item
+							:command="
+								REMOVE_COMMAND
+							"
+							>Remove</el-dropdown-item
+						>
+					</el-dropdown-menu>
+				</template>
+			</el-dropdown>
+		</template>
+
+		<template v-else>
+			<el-form
+				ref="form"
+				:model="form"
+				class="ingredient__form"
+			>
+				<el-form-item class="ingredient__text">
+					<el-form-item>
+						<el-input
+							ref="nameInput"
+							v-model="form.name"
+							placeholder="Ingredient name"
+						></el-input>
+					</el-form-item>
+					<el-form-item>
+						<el-select
+							ref="unitSelect"
+							v-model="form.unit"
+							placeholder="Ingredient unit"
+							value-key="id"
+						>
+							<el-option
+								v-for="unit in units"
+								:key="unit.id"
+								:label="
+									unit.get(
+										'name'
+									)
+								"
+								:value="unit"
+							></el-option>
+						</el-select>
+					</el-form-item>
+				</el-form-item>
+				<el-form-item>
+					<el-icon @click="handleEditConfirm">
+						<check />
+					</el-icon>
+				</el-form-item>
+			</el-form>
+		</template>
+	</div>
 </template>
 
 <script>
-import { MoreFilled } from "@element-plus/icons";
+import { MoreFilled, Check } from "@element-plus/icons";
+import { mapState } from "vuex";
 
 const EDIT_COMMAND = "edit";
 const REMOVE_COMMAND = "remove";
 
 export default {
-  name: "ingredient",
+	name: "ingredient",
 
-  components: {
-    MoreFilled,
-  },
+	components: {
+		MoreFilled,
+		Check,
+	},
 
-  props: {
-    ingredient: {
-      type: Object,
-      required: true,
-    },
-  },
+	props: {
+		ingredient: {
+			type: Object,
+			required: true,
+		},
+	},
 
-  data() {
-    return {
-      EDIT_COMMAND: EDIT_COMMAND,
-      REMOVE_COMMAND: REMOVE_COMMAND,
-    };
-  },
+	data() {
+		return {
+			EDIT_COMMAND: EDIT_COMMAND,
+			REMOVE_COMMAND: REMOVE_COMMAND,
+			form: {
+				name: "",
+				unit: null,
+			},
+			formVisible: false,
+		};
+	},
 
-  computed: {
-    name() {
-      return this.ingredient.get("name");
-    },
+	mounted() {
+		this.form.name = this.name;
+		this.form.unit = this.ingredient.get("unit");
+	},
 
-    unit() {
-      return this.ingredient.get("unit").get("name");
-    },
-  },
+	computed: {
+		...mapState({
+			units: (state) => state.units.units,
+		}),
 
-  methods: {
-    handleCommand(command) {
-      switch (command) {
-        case EDIT_COMMAND:
-          this.edit();
-          break;
-        case REMOVE_COMMAND:
-          this.remove();
-          break;
-        default:
-          console.error("Unknown command:", command);
-      }
-    },
+		name() {
+			return this.ingredient.get("name");
+		},
 
-    edit() {
-      console.log("editing");
-    },
+		unitName() {
+			return this.ingredient.get("unit").get("name");
+		},
+	},
 
-    remove() {
-      console.log("removing");
-    }
-  },
+	methods: {
+		handleCommand(command) {
+			switch (command) {
+				case EDIT_COMMAND:
+					this.edit();
+					break;
+				case REMOVE_COMMAND:
+					this.remove();
+					break;
+				default:
+					console.error(
+						"Unknown command:",
+						command
+					);
+			}
+		},
+
+		edit() {
+			this.formVisible = true;
+			this.$nextTick(() => {
+				this.$refs.nameInput.$refs.input.focus();
+			});
+		},
+
+		handleEditConfirm() {
+			this.$store.dispatch("editIngredient", {
+				ingredient: this.ingredient,
+				name: this.form.name,
+				unit: this.form.unit,
+			});
+			this.formVisible = false;
+		},
+
+		remove() {
+			console.log("removing");
+		},
+	},
 };
 </script>
 
 <style>
-.ingredient {
-  display: flex;
-  align-items: center;
+.ingredient,
+.ingredient__form {
+	display: flex;
+	align-items: center;
 }
 
 .ingredient__avatar {
-  margin-right: 1rem;
+	margin-right: 1rem;
+	flex: 0 0 auto;
 }
 
 .ingredient__text {
-  flex: 1 0 auto;
-  text-align: left;
+	flex: 1 0 auto;
+	text-align: left;
+	margin-right: 1rem;
 }
 
 .ingredient__primary-text {
-  font-size: 16px;
-  color: black;
+	font-size: 16px;
+	color: black;
 }
 
 .ingredient__secondary-text {
-  font-size: 14px;
-  color: rgba(0, 0, 0, 0.5);
+	font-size: 14px;
+	color: rgba(0, 0, 0, 0.5);
+}
+
+.ingredient__form .el-form-item {
+	margin: 0;
+}
+
+.ingredient__form > .ingredient__text .el-form-item {
+	width: 220px;
 }
 </style>
