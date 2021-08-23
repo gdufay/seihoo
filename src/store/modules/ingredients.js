@@ -1,5 +1,10 @@
 import Parse from "parse/dist/parse.min.js";
 
+const logAndThrow = (e) => {
+	console.error(e);
+	throw e;
+}
+
 const state = () => ({
 	ingredients: [],
 });
@@ -21,14 +26,15 @@ const actions = {
 			.then(() => commit("removeIngredient", ingredient));
 	},
 
-	addIngredient({ commit }, ingredientName) {
+	addIngredient({ commit }, { name, unit }) {
 		const newIngredient = new Parse.Object("Ingredient");
 
-		newIngredient.set("name", ingredientName);
-		newIngredient
+		newIngredient.set("name", name);
+		newIngredient.set("unit", unit);
+		return newIngredient
 			.save()
 			.then((result) => commit("addIngredient", result))
-			.catch((e) => console.error(e)); // TODO: propagate result
+			.catch(logAndThrow);
 	},
 
 	editIngredient({ commit }, { ingredient, name, unit }) {

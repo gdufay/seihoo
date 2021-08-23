@@ -12,11 +12,36 @@
       ></ingredient>
     </el-scrollbar>
 
+    <el-dialog title="Add ingredient" v-model="dialogFormVisible">
+      <el-form v-model="form" label-width="120px">
+        <el-form-item label="Ingredient name">
+          <el-input placeholder="Name" v-model="form.name"></el-input>
+        </el-form-item>
+        <el-form-item label="Unit">
+          <el-select v-model="form.unit" placeholder="Unit" value-key="id">
+            <el-option
+              v-for="unit in units"
+              :key="unit.id"
+              :label="unit.get('name')"
+              :value="unit"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="dialogFormVisible = false">Cancel</el-button>
+          <el-button type="primary" @click="addIngredient"> Confirm </el-button>
+        </span>
+      </template>
+    </el-dialog>
+
     <div class="card__bottom">
       <el-tooltip content="Add ingredient">
         <el-button
           type="success"
-          @click="add"
+          @click="dialogFormVisible = true"
           icon="el-icon-plus"
           circle
         ></el-button>
@@ -34,41 +59,35 @@ export default {
 
   components: { Ingredient },
 
+  data() {
+    return {
+      dialogFormVisible: false,
+      form: {
+        name: "",
+        unit: null,
+      },
+    };
+  },
+
   computed: {
     ...mapState({
       ingredients: (state) => state.ingredients.ingredients,
+      units: (state) => state.units.units,
     }),
   },
 
   methods: {
-    /*
-    removeIngredient(ingredient) {
-      this.$confirm(
-        "This will permanently delete the ingredient. Continue?",
-        "Warning",
-        {
-          confirmButtonText: "OK",
-          cancelButtonText: "Cancel",
-          type: "warning",
-        }
-      )
-        .then(() => this.$store.dispatch("removeIngredient", ingredient))
-        .then(() =>
-          this.$message({ type: "success", message: "Delete completed" })
-        )
-        .catch((e) =>
-          this.$message(
-            e === "cancel"
-              ? { type: "info", message: "Delete canceled" }
-              : { type: "error", message: e.message }
-          )
+    addIngredient() {
+      this.$store
+        .dispatch("addIngredient", this.form)
+        .then(() => {
+          this.$message({ type: "success", message: "Adding succesful" });
+          this.dialogFormVisible = false;
+          this.form = { name: "", unit: null };
+        })
+        .catch(() =>
+          this.$message({ type: "error", message: "Ohoh... A problem occured" })
         );
-    },
-    */
-
-    add() {
-      console.log("Adding ingredient");
-      // TODO: unshift, set editable mode and give focus
     },
   },
 };
