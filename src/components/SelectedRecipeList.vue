@@ -4,14 +4,27 @@
       <span>Selected Recipes</span>
     </div>
 
-    <recipe-item
-      v-for="recipe in recipes"
-      :key="recipe.get('name')"
-      :recipe="recipe"
-      :actions="actions"
-      @menuAction="handleMenuAction"
-    >
-    </recipe-item>
+    <el-scrollbar style="height: 0">
+      <recipe-item
+        v-for="recipe in recipes"
+        :key="recipe.get('name')"
+        :recipe="recipe"
+        :actions="actions"
+        @menuAction="handleMenuAction"
+      >
+      </recipe-item>
+    </el-scrollbar>
+
+    <div class="card__bottom">
+      <el-tooltip content="Get random recipes">
+        <el-button
+          type="warning"
+          @click="generateRandom"
+          icon="el-icon-setting"
+          circle
+        ></el-button>
+      </el-tooltip>
+    </div>
   </el-card>
 </template>
 
@@ -50,6 +63,23 @@ export default {
           console.error("Unknown action:", action);
           break;
       }
+    },
+
+    generateRandom() {
+      this.$prompt(
+        "Please input the number of recipe you want",
+        "Number of recipes",
+        {
+          inputType: "number",
+          inputErrorMessage: "Invalid number",
+        }
+      )
+        .then(({ value }) =>
+          this.$store.dispatch("generateRandom", parseInt(value, 10) || 0)
+        )
+        .catch(
+          () => this.$message({ type: "info", message: "Random canceled" }) // TODO: catch other error message
+        );
     },
   },
 };

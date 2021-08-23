@@ -8,6 +8,12 @@ const logAndThrow = (e) => {
     throw e;
 }
 
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min)) + min;
+}
+
 const state = () => ({
     recipes: [],
     selectedRecipes: [],
@@ -46,6 +52,16 @@ const actions = {
             .then(() => commit("removeRecipe", recipe))
             .catch(logAndThrow);
     },
+
+    async generateRandom({ state, commit }, value) {
+        const number = Math.min(value, state.recipes.length);
+
+        for (let i = 0; i < number; ++i) {
+            const random = getRandomInt(0, state.recipes.length);
+
+            commit("selectRecipeByIndex", random);
+        }
+    },
 }
 
 const mutations = {
@@ -60,6 +76,13 @@ const mutations = {
             state.recipes.splice(index, 1);
             state.selectedRecipes.push(recipe);
         }
+    },
+
+    selectRecipeByIndex(state, index) {
+        const recipe = state.recipes[index];
+
+        state.recipes.splice(index, 1);
+        state.selectedRecipes.push(recipe);
     },
 
     unselectRecipe(state, recipe) {
