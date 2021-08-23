@@ -225,6 +225,7 @@ export default {
 .ingredient__primary-text {
 	font-size: 16px;
 	color: black;
+	text-transform: capitalize;
 }
 
 .ingredient__secondary-text {
