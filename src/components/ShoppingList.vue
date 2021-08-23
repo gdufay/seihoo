@@ -30,6 +30,7 @@
 <script>
 import { mapGetters } from "vuex";
 import IngredientItem from "./IngredientItem.vue";
+import { generateShoppingList } from "@/utils/pdf";
 
 export default {
   name: "shopping-list",
@@ -48,8 +49,8 @@ export default {
 
   methods: {
     download() {
-      console.log("downloading", this.ingredients);
-    }
+      generateShoppingList(this.ingredients);
+    },
   },
 };
 </script>
