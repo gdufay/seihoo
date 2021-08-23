@@ -5,19 +5,14 @@
 
   <selected-recipe-list class="column-card"></selected-recipe-list>
 
-  <el-card class="column-card">
-    <template #header>
-      <div class="card-header">
-        <span>Shopping List</span>
-      </div>
-    </template>
-  </el-card>
+  <shopping-list class="column-card"></shopping-list>
 </template>
 
 <script>
 import IngredientList from "../components/IngredientList.vue";
 import RecipeList from "../components/RecipeList.vue";
 import SelectedRecipeList from "../components/SelectedRecipeList.vue";
+import ShoppingList from "../components/ShoppingList.vue";
 
 export default {
   name: "Home",
@@ -26,6 +21,7 @@ export default {
     IngredientList,
     RecipeList,
     SelectedRecipeList,
+    ShoppingList,
   },
 
   data() {

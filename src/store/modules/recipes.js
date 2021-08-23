@@ -14,6 +14,22 @@ const state = () => ({
 })
 
 const getters = {
+    shoppingListFromSelected(state) {
+        const map = new Map();
+
+        for (const recipe of state.selectedRecipes) {
+            for (const { ingredient, quantity } of recipe.get("ingredients")) {
+                const ingredientName = ingredient.get("name");
+                const { quantity: oldQuantity = 0 } = map.get(ingredientName) || {};
+
+                map.set(ingredientName, {
+                    unit: ingredient.get("unit"),
+                    quantity: oldQuantity + quantity,
+                });
+            }
+        }
+        return map;
+    }
 }
 
 const actions = {
