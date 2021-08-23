@@ -37,6 +37,11 @@ export default {
 
 .el-main.flex {
   display: flex;
-  justify-content: center;
+}
+
+@media screen and (min-width: 1500px) {
+  .el-main.flex {
+    justify-content: center;
+  }
 }
 </style>
