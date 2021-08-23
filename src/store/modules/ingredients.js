@@ -15,22 +15,22 @@ const actions = {
 	getAllIngredients({ commit }) {
 		const query = new Parse.Query("Ingredient");
 
-		query.find()
+		return query.find()
 			.then((results) => commit("setIngredients", results))
-			.catch((e) => console.error(e));
+			.catch(logAndThrow);
 	},
 
 	removeIngredient({ commit }, ingredient) {
 		return ingredient
 			.destroy()
-			.then(() => commit("removeIngredient", ingredient));
+			.then(() => commit("removeIngredient", ingredient))
+			.catch(logAndThrow);
 	},
 
 	addIngredient({ commit }, { name, unit }) {
 		const newIngredient = new Parse.Object("Ingredient");
 
-		newIngredient.set("name", name);
-		newIngredient.set("unit", unit);
+		newIngredient.set({ name: name, unit: unit });
 		return newIngredient
 			.save()
 			.then((result) => commit("addIngredient", result))
@@ -41,11 +41,11 @@ const actions = {
 		const newIngredient = ingredient.clone();
 
 		newIngredient.id = ingredient.id;
-		newIngredient.set("name", name);
-		newIngredient.set("unit", unit);
+		newIngredient.set({ name: name, unit: unit });
 		return newIngredient
 			.save()
-			.then((result) => commit("editIngredient", result));
+			.then((result) => commit("editIngredient", result))
+			.catch(logAndThrow);
 	},
 };
 
