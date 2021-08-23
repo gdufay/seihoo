@@ -2,6 +2,12 @@ import Parse from "parse/dist/parse.min.js"
 
 const TABLE_NAME = "Recipe";
 
+// TODO: remove duplicate
+const logAndThrow = (e) => {
+    console.error(e);
+    throw e;
+}
+
 const state = () => ({
     recipes: [],
     selectedRecipes: [],
@@ -14,15 +20,15 @@ const actions = {
     getAllRecipes({ commit }) {
         const query = new Parse.Query(TABLE_NAME);
 
-        query.find()
+        return query.find()
             .then(results => commit("setRecipes", results))
-            .catch(e => console.error(e));
+            .catch(logAndThrow);
     },
 
     removeRecipe({ commit }, recipe) {
-        recipe.destroy()
+        return recipe.destroy()
             .then(() => commit("removeRecipe", recipe))
-            .catch(e => console.error(e)); // TODO: propagate error
+            .catch(logAndThrow);
     },
 }
 

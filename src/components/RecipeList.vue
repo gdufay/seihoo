@@ -68,7 +68,7 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapState } from "vuex";
+import { mapMutations, mapState } from "vuex";
 import IngredientItem from "./IngredientItem.vue";
 
 export default {
@@ -91,14 +91,23 @@ export default {
   methods: {
     ...mapMutations(["selectRecipe"]),
 
-    ...mapActions(["removeRecipe"]),
-
     editRecipe(recipe) {
       this.$router.push("/edit/" + recipe.id);
     },
 
     add() {
       this.$router.push("/new");
+    },
+
+    removeRecipe(recipe) {
+      this.$store
+        .dispatch("removeRecipe", recipe)
+        .then(() =>
+          this.$message({ type: "success", message: "Removing successful" })
+        )
+        .catch(() =>
+          this.$message({ type: "error", message: "Ohoh... A problem occured" })
+        );
     },
 
     // TODO: quickfixe, change
