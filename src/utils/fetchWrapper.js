@@ -1,4 +1,13 @@
+import { ServerError } from "./error";
+
 const storage = window.localStorage;
+
+const handleError = (results) => {
+    if (results.code) {
+        throw new ServerError(results.code, results.error);
+    }
+    return results;
+}
 
 const fetchWrapper = async (url, { method = "GET", body, stringify = true, auth = false } = {}) => {
     const headers = new Headers({
@@ -17,7 +26,9 @@ const fetchWrapper = async (url, { method = "GET", body, stringify = true, auth 
         init.body = stringify ? JSON.stringify(body) : body;
     }
 
-    return fetch(url, init).then(results => results.json());
+    return fetch(url, init)
+        .then(results => results.json())
+        .then(handleError);
 }
 
 export default fetchWrapper;
