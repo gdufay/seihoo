@@ -5,14 +5,33 @@
     </div>
 
     <el-scrollbar style="height: 0">
-      <recipe-item
-        v-for="recipe in recipes"
-        :key="recipe.objectId"
-        :recipe="recipe"
-        :actions="actions"
-        @menuAction="handleMenuAction"
-      >
-      </recipe-item>
+      <el-collapse v-model="activeRecipes">
+        <el-collapse-item
+          v-for="recipe in recipes"
+          :key="recipe.objectId"
+          :title="recipe.name"
+        >
+          <ingredient-item
+            v-for="{ ingredient, quantity } in recipe.ingredients"
+            :key="ingredient.objectId"
+            :name="ingredient.name"
+            :quantity="quantity"
+            :unit="ingredient.unit.name"
+          ></ingredient-item>
+
+          <div class="button-group__container">
+            <el-tooltip content="Unselect">
+              <el-button
+                type="primary"
+                @click="unselectRecipe(recipe)"
+                size="mini"
+                plain
+                icon="el-icon-close"
+              ></el-button>
+            </el-tooltip>
+          </div>
+        </el-collapse-item>
+      </el-collapse>
     </el-scrollbar>
 
     <div class="card__bottom">
@@ -30,18 +49,16 @@
 
 <script>
 import { mapMutations, mapState } from "vuex";
-import RecipeItem from "./RecipeItem.vue";
-
-const UNSELECT_RECIPE = "unselect";
+import IngredientItem from "./IngredientItem.vue";
 
 export default {
   name: "selected-recipe-list",
 
-  components: { RecipeItem },
+  components: { IngredientItem },
 
   data() {
     return {
-      actions: [{ id: UNSELECT_RECIPE, text: "Unselect" }],
+      activeRecipes: [],
     };
   },
 
@@ -53,17 +70,6 @@ export default {
 
   methods: {
     ...mapMutations(["unselectRecipe"]),
-
-    handleMenuAction({ action, recipe }) {
-      switch (action) {
-        case UNSELECT_RECIPE:
-          this.unselectRecipe(recipe);
-          break;
-        default:
-          console.error("Unknown action:", action);
-          break;
-      }
-    },
 
     generateRandom() {
       this.$prompt(
@@ -77,8 +83,8 @@ export default {
         .then(({ value }) =>
           this.$store.dispatch("generateRandom", parseInt(value, 10) || 0)
         )
-        .catch(
-          () => this.$message({ type: "info", message: "Random canceled" }) // TODO: catch other error message
+        .catch(() =>
+          this.$message({ type: "info", message: "Random canceled" })
         );
     },
   },
