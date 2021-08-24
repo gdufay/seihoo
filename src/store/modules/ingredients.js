@@ -1,5 +1,3 @@
-import Parse from "parse/dist/parse.min.js";
-
 const logAndThrow = (e) => {
 	console.error(e);
 	throw e;
@@ -12,39 +10,61 @@ const state = () => ({
 const getters = {};
 
 const actions = {
-	getAllIngredients({ commit }) {
-		const query = new Parse.Query("Ingredient");
+	async getAllIngredients({ commit }) {
+		const headers = new Headers({
+			"Content-Type": "application/json",
+			"X-Parse-Application-Id": "0PpmnebENvw8ccfGRSqesLXGVGsRMJOpEvZz2Hei",
+			"X-Parse-REST-API-Key": "Ck76d2h5GmkJSpxB7U26sQyyV6UHZV7qtRxYR2Sg"
+		});
 
-		return query.find()
-			.then((results) => commit("setIngredients", results))
+		return fetch("https://parseapi.back4app.com/classes/Ingredient?include=unit", { method: "GET", headers: headers })
+			.then(result => result.json())
+			.then(({ results, code, error }) => {
+				if (results) {
+					commit("setIngredients", results);
+				} else {
+					throw Error(`Error code: ${code}: ${error}`);
+				}
+			})
 			.catch(logAndThrow);
 	},
 
-	removeIngredient({ commit }, ingredient) {
-		return ingredient
-			.destroy()
+	async removeIngredient({ commit }, ingredient) {
+		const headers = new Headers({
+			"Content-Type": "application/json",
+			"X-Parse-Application-Id": "0PpmnebENvw8ccfGRSqesLXGVGsRMJOpEvZz2Hei",
+			"X-Parse-REST-API-Key": "Ck76d2h5GmkJSpxB7U26sQyyV6UHZV7qtRxYR2Sg"
+		});
+
+		return fetch(`https://parseapi.back4app.com/classes/Ingredient/${ingredient.objectId}`, { method: "DELETE", headers: headers })
 			.then(() => commit("removeIngredient", ingredient))
 			.catch(logAndThrow);
 	},
 
-	addIngredient({ commit }, { name, unit }) {
-		const newIngredient = new Parse.Object("Ingredient");
+	async addIngredient({ commit }, ingredient) {
+		const headers = new Headers({
+			"Content-Type": "application/json",
+			"X-Parse-Application-Id": "0PpmnebENvw8ccfGRSqesLXGVGsRMJOpEvZz2Hei",
+			"X-Parse-REST-API-Key": "Ck76d2h5GmkJSpxB7U26sQyyV6UHZV7qtRxYR2Sg"
+		});
+		const pointer = { __type: "Pointer", className: "Unit", objectId: ingredient.unit.objectId }
 
-		newIngredient.set({ name: name, unit: unit });
-		return newIngredient
-			.save()
-			.then((result) => commit("addIngredient", result))
+		return fetch(`https://parseapi.back4app.com/classes/Ingredient`, { method: "POST", headers: headers, body: JSON.stringify({ name: ingredient.name, unit: pointer }) })
+			.then(results => results.json())
+			.then(({ objectId }) => commit("addIngredient", { objectId: objectId, ...ingredient }))
 			.catch(logAndThrow);
 	},
 
-	editIngredient({ commit }, { ingredient, name, unit }) {
-		const newIngredient = ingredient.clone();
+	async editIngredient({ commit }, { objectId, ingredient }) {
+		const headers = new Headers({
+			"Content-Type": "application/json",
+			"X-Parse-Application-Id": "0PpmnebENvw8ccfGRSqesLXGVGsRMJOpEvZz2Hei",
+			"X-Parse-REST-API-Key": "Ck76d2h5GmkJSpxB7U26sQyyV6UHZV7qtRxYR2Sg"
+		});
+		const pointer = { __type: "Pointer", className: "Unit", objectId: ingredient.unit.objectId }
 
-		newIngredient.id = ingredient.id;
-		newIngredient.set({ name: name, unit: unit });
-		return newIngredient
-			.save()
-			.then((result) => commit("editIngredient", result))
+		return fetch(`https://parseapi.back4app.com/classes/Ingredient/${objectId}`, { method: "PUT", headers: headers, body: JSON.stringify({ name: ingredient.name, unit: pointer }) })
+			.then(() => commit("editIngredient", { objectId: objectId, ...ingredient }))
 			.catch(logAndThrow);
 	},
 };
@@ -56,7 +76,7 @@ const mutations = {
 
 	removeIngredient(state, ingredient) {
 		const index = state.ingredients.findIndex(
-			(item) => item.id === ingredient.id
+			(item) => item.objectId === ingredient.objectId
 		);
 
 		if (index !== -1) state.ingredients.splice(index, 1);
@@ -68,7 +88,7 @@ const mutations = {
 
 	editIngredient(state, ingredient) {
 		const index = state.ingredients.findIndex(
-			(item) => item.id === ingredient.id
+			(item) => item.objectId === ingredient.objectId
 		);
 
 		if (index !== -1) {

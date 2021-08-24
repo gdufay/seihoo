@@ -5,10 +5,10 @@
     <template v-if="!formVisible">
       <div class="ingredient__text">
         <p class="ingredient__primary-text">
-          {{ name }}
+          {{ ingredient.name }}
         </p>
         <p class="ingredient__secondary-text">
-          {{ unitName }}
+          {{ ingredient.unit.name }}
         </p>
       </div>
 
@@ -98,21 +98,13 @@ export default {
   },
 
   mounted() {
-    this.form = { name: this.name, unit: this.ingredient.get("unit") };
+    this.form = { name: this.ingredient.name, unit: this.ingredient.unit };
   },
 
   computed: {
     ...mapState({
       units: (state) => state.units.units,
     }),
-
-    name() {
-      return this.ingredient.get("name");
-    },
-
-    unitName() {
-      return this.ingredient.get("unit").get("name");
-    },
   },
 
   methods: {
@@ -139,8 +131,8 @@ export default {
     handleEditConfirm() {
       this.$store
         .dispatch("editIngredient", {
-          ingredient: this.ingredient,
-          ...this.form,
+          objectId: this.ingredient.objectId,
+          ingredient: this.form,
         })
         .then(() => this.$message({ type: "success", message: "Edit success" }))
         .catch(() =>

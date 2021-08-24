@@ -7,7 +7,7 @@
     <el-scrollbar style="height: 0">
       <ingredient
         v-for="ingredient in ingredients"
-        :key="ingredient.id"
+        :key="ingredient.objectId"
         :ingredient="ingredient"
       ></ingredient>
     </el-scrollbar>
