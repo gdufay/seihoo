@@ -59,7 +59,6 @@
 import { mapActions, mapMutations, mapState } from "vuex";
 import { mapFields, mapMultiRowFields } from "vuex-map-fields";
 
-// TODO: watch route changes
 export default {
   name: "EditRecipe",
 
@@ -76,23 +75,24 @@ export default {
   },
 
   created() {
-    if (!this.id) {
-      return;
-    }
-
-    const recipe = this.$store.state.recipes.recipes.find(
-      (recipe) => recipe.objectId === this.id
-    );
-
-    if (recipe) {
-      this.setEditedRecipe(recipe);
-    } else {
-      this.$router.replace("/404");
+    if (this.id) {
+      this.findAndSet(this.id);
     }
   },
 
   unmounted() {
     this.cleanEditedRecipe();
+  },
+
+  watch: {
+    $route({ params }) {
+      if (!params.id) {
+        this.cleanEditedRecipe();
+        return;
+      }
+
+      this.findAndSet(params.id);
+    },
   },
 
   methods: {
@@ -118,6 +118,18 @@ export default {
 
     cancel() {
       this.$router.back();
+    },
+
+    findAndSet(id) {
+      const recipe = this.$store.state.recipes.recipes.find(
+        (recipe) => recipe.objectId === id
+      );
+
+      if (recipe) {
+        this.setEditedRecipe(recipe);
+      } else {
+        this.$router.replace("/404");
+      }
     },
   },
 };
