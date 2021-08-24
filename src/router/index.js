@@ -2,7 +2,6 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import Login from "../views/Login.vue"
 import EditRecipe from "../views/EditRecipe.vue"
-import Parse from 'parse/dist/parse.min.js'
 
 const loginPageName = "Login";
 const homePageName = "Home";
@@ -39,11 +38,11 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  const user = Parse.User.current();
+  const token = window.localStorage.getItem("sessionToken");
 
-  if (to.name !== loginPageName && !user)
+  if (to.name !== loginPageName && !token)
     next({ name: loginPageName });
-  else if (to.name === loginPageName && !!user)
+  else if (to.name === loginPageName && !!token)
     next({ name: homePageName })
   else
     next();

@@ -23,6 +23,8 @@
 </template>
 
 <script>
+import fetchWrapper from "../utils/fetchWrapper";
+
 export default {
   name: "Login",
 
@@ -54,8 +56,21 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.loading = true;
-          this.$Parse.User.logIn(this.form.username, this.form.password)
-            .then(() => this.$router.replace("/"))
+
+          const username = encodeURIComponent(this.form.username);
+          const password = encodeURIComponent(this.form.password);
+
+          fetchWrapper(
+            `https://parseapi.back4app.com/login?username=${username}&password=${password}`
+          )
+            .then(({ sessionToken, error }) => {
+              if (sessionToken) {
+                window.localStorage.setItem("sessionToken", sessionToken);
+                this.$router.replace("/");
+              } else {
+                throw Error(`Error: ${error}`);
+              }
+            })
             .catch((e) => {
               this.loginError = "";
               this.loginError = e.message;
