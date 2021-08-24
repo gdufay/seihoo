@@ -1,5 +1,5 @@
 <template>
-  <el-form ref="recipeForm">
+  <el-form class="edit-recipe" ref="recipeForm">
     <el-form-item label="Recipe name">
       <el-input v-model="name"></el-input>
     </el-form-item>
@@ -9,33 +9,48 @@
       :key="index"
       :label="'Ingredient ' + index"
     >
-      <el-select
-        v-model="ingredient.ingredient"
-        placeholder="Ingredient"
-        value-key="objectId"
-      >
-        <el-option
-          v-for="ingredientItem in ingredientsList"
-          :key="ingredientItem.objectId"
-          :label="ingredientItem.name"
-          :value="ingredientItem"
-        ></el-option>
-      </el-select>
-      <el-input-number
+      <el-input
         v-model.number="ingredient.quantity"
+        type="number"
         placeholder="Quantity"
-        controls-position="right"
         :min="0"
-      ></el-input-number>
-      <el-button @click.prevent="removeIngredient(index)"> Remove </el-button>
+      >
+        <template #prepend>
+          <el-select
+            v-model="ingredient.ingredient"
+            placeholder="Ingredient"
+            value-key="objectId"
+          >
+            <el-option
+              v-for="ingredientItem in ingredientsList"
+              :key="ingredientItem.objectId"
+              :label="ingredientItem.name"
+              :value="ingredientItem"
+            ></el-option>
+          </el-select>
+        </template>
+
+        <template #append v-if="ingredient.ingredient">
+          {{ ingredient.ingredient.unit.name }}
+        </template>
+      </el-input>
+
+      <el-tooltip content="Remove">
+        <el-button
+          @click.prevent="removeIngredient(index)"
+          icon="el-icon-delete"
+          type="danger"
+        >
+        </el-button>
+      </el-tooltip>
     </el-form-item>
 
     <el-form-item>
       <el-button @click="addIngredient">Add Ingredient</el-button>
+      <el-button @click="cancel">Cancel</el-button>
       <el-button type="primary" @click="onSubmit('recipeForm')">{{
         id ? "Update" : "Add"
       }}</el-button>
-      <el-button @click="cancel">Cancel</el-button>
     </el-form-item>
   </el-form>
 </template>
@@ -109,4 +124,7 @@ export default {
 </script>
 
 <style>
+.edit-recipe .el-select {
+  width: 100px;
+}
 </style>
