@@ -1,9 +1,6 @@
 import { getField, updateField } from 'vuex-map-fields';
-
-const logAndThrow = (e) => {
-    console.error(e);
-    throw e;
-}
+import { logAndThrow, createPointer } from '../../utils/utils';
+import fetchWrapper from '../../utils/fetchWrapper';
 
 const state = () => ({
     currentRecipe: null,
@@ -43,29 +40,23 @@ const actions = {
     },
 
     async editRecipe({ state }) {
-        const headers = new Headers({
-            "Content-Type": "application/json",
-            "X-Parse-Application-Id": "0PpmnebENvw8ccfGRSqesLXGVGsRMJOpEvZz2Hei",
-            "X-Parse-REST-API-Key": "Ck76d2h5GmkJSpxB7U26sQyyV6UHZV7qtRxYR2Sg"
-        });
-        const body = { name: state.name, ingredients: state.ingredients.map(({ ingredient, quantity }) => ({ quantity: quantity, ingredient: { __type: "Pointer", className: "Ingredient", objectId: ingredient.objectId } })) };
+        const body = {
+            name: state.name,
+            ingredients: state.ingredients.map(({ ingredient, quantity }) => ({ quantity: quantity, ingredient: createPointer("Ingredient", ingredient.objectId) }))
+        };
 
-        return fetch(`https://parseapi.back4app.com/classes/Recipe/${state.currentRecipe.objectId}`, { method: "PUT", headers: headers, body: JSON.stringify(body) })
+        return fetchWrapper(`https://parseapi.back4app.com/classes/Recipe/${state.currentRecipe.objectId}`, { method: "PUT", body: body })
             .catch(logAndThrow);
     },
 
     async createRecipe({ state }) {
-        const headers = new Headers({
-            "Content-Type": "application/json",
-            "X-Parse-Application-Id": "0PpmnebENvw8ccfGRSqesLXGVGsRMJOpEvZz2Hei",
-            "X-Parse-REST-API-Key": "Ck76d2h5GmkJSpxB7U26sQyyV6UHZV7qtRxYR2Sg"
-        });
-        const body = { name: state.name, ingredients: state.ingredients.map(({ ingredient, quantity }) => ({ quantity: quantity, ingredient: { __type: "Pointer", className: "Ingredient", objectId: ingredient.objectId } })) };
-        console.log(body)
+        const body = {
+            name: state.name,
+            ingredients: state.ingredients.map(({ ingredient, quantity }) => ({ quantity: quantity, ingredient: createPointer("Ingredient", ingredient.objectId) }))
+        };
 
-        return fetch(`https://parseapi.back4app.com/classes/Recipe`, { method: "POST", headers: headers, body: JSON.stringify(body) })
-            .then(results => results.json())
-            .then(r => console.log(r))
+        return fetchWrapper(`https://parseapi.back4app.com/classes/Recipe`, { method: "POST", body: body })
+            .then(r => console.log(r)) // TODO: handle error and add to recipes
             .catch(logAndThrow);
     },
 };

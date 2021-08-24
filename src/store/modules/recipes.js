@@ -1,14 +1,5 @@
-// TODO: remove duplicate
-const logAndThrow = (e) => {
-    console.error(e);
-    throw e;
-}
-
-function getRandomInt(min, max) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min)) + min;
-}
+import fetchWrapper from "../../utils/fetchWrapper";
+import { logAndThrow, getRandomInt } from "../../utils/utils";
 
 const state = () => ({
     recipes: [],
@@ -35,15 +26,9 @@ const getters = {
 
 const actions = {
     async getAllRecipes({ commit }) {
-        const headers = new Headers({
-            "Content-Type": "application/json",
-            "X-Parse-Application-Id": "0PpmnebENvw8ccfGRSqesLXGVGsRMJOpEvZz2Hei",
-            "X-Parse-REST-API-Key": "Ck76d2h5GmkJSpxB7U26sQyyV6UHZV7qtRxYR2Sg"
-        });
         const include = "include=ingredients.ingredient,ingredients.ingredient.unit,frequency"
 
-        return fetch(`https://parseapi.back4app.com/classes/Recipe?${include}`, { method: "GET", headers: headers })
-            .then(result => result.json())
+        return fetchWrapper(`https://parseapi.back4app.com/classes/Recipe?${include}`)
             .then(({ results, code, error }) => {
                 if (results) {
                     commit("setRecipes", results);
@@ -55,13 +40,7 @@ const actions = {
     },
 
     async removeRecipe({ commit }, recipe) {
-        const headers = new Headers({
-            "Content-Type": "application/json",
-            "X-Parse-Application-Id": "0PpmnebENvw8ccfGRSqesLXGVGsRMJOpEvZz2Hei",
-            "X-Parse-REST-API-Key": "Ck76d2h5GmkJSpxB7U26sQyyV6UHZV7qtRxYR2Sg"
-        });
-
-        return fetch(`https://parseapi.back4app.com/classes/Recipe/${recipe.objectId}`, { method: "DELETE", headers: headers })
+        return fetch(`https://parseapi.back4app.com/classes/Recipe/${recipe.objectId}`, { method: "DELETE" })
             .then(() => commit("removeRecipe", recipe))
             .catch(logAndThrow);
     },
