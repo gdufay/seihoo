@@ -8,15 +8,15 @@
       <el-collapse v-model="activeRecipes">
         <el-collapse-item
           v-for="recipe in recipes"
-          :key="recipe.id"
-          :title="recipe.get('name')"
+          :key="recipe.objectId"
+          :title="recipe.name"
         >
           <ingredient-item
-            v-for="{ ingredient, quantity } in recipe.get('ingredients')"
-            :key="ingredient.id"
-            :name="ingredient.get('name')"
+            v-for="{ ingredient, quantity } in recipe.ingredients"
+            :key="ingredient.objectId"
+            :name="ingredient.name"
             :quantity="quantity"
-            :unit="unitNameOrNothing(ingredient)"
+            :unit="ingredient.unit.name"
           ></ingredient-item>
 
           <div class="button-group__container">
@@ -92,7 +92,7 @@ export default {
     ...mapMutations(["selectRecipe"]),
 
     editRecipe(recipe) {
-      this.$router.push("/edit/" + recipe.id);
+      this.$router.push("/edit/" + recipe.objectId);
     },
 
     add() {
@@ -108,19 +108,6 @@ export default {
         .catch(() =>
           this.$message({ type: "error", message: "Ohoh... A problem occured" })
         );
-    },
-
-    // TODO: quickfixe, change
-    unitNameOrNothing(ingredient) {
-      let name;
-
-      try {
-        name = ingredient.get("unit").get("name");
-      } catch (e) {
-        console.error(e.message);
-      }
-
-      return name || "";
     },
   },
 };

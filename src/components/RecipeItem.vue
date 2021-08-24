@@ -1,32 +1,36 @@
 <template>
   <el-card class="recipe-item">
     <template #header>
-    <div class="card-header item-name">
-      <span>{{ recipe.get("name") }}</span>
+      <div class="card-header item-name">
+        <span>{{ recipe.name }}</span>
 
-      <el-dropdown v-if="actions" trigger="click" @command="handleCommand">
-        <el-icon class="dropdown-link" :size="24">
-          <more-filled :style="iconStyle" />
-        </el-icon>
+        <el-dropdown v-if="actions" trigger="click" @command="handleCommand">
+          <el-icon class="dropdown-link" :size="24">
+            <more-filled :style="iconStyle" />
+          </el-icon>
 
-        <template #dropdown>
-          <el-dropdown-menu>
-            <el-dropdown-item v-for="action in actions" :key="action.id" :command="action.id">
-              {{ action.text }}
-            </el-dropdown-item>
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
-    </div>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item
+                v-for="action in actions"
+                :key="action.id"
+                :command="action.id"
+              >
+                {{ action.text }}
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+      </div>
     </template>
 
     <div class="ingredients-container">
       <ingredient-item
-        v-for="{ ingredient, quantity } in recipe.get('ingredients')"
-        :key="ingredient.get('name')"
-        :name="ingredient.get('name')"
+        v-for="{ ingredient, quantity } in recipe.ingredients"
+        :key="ingredient.objectId"
+        :name="ingredient.name"
         :quantity="quantity"
-        :unit="unitNameOrNothing(ingredient)"
+        :unit="ingredient.unit.name"
       ></ingredient-item>
     </div>
   </el-card>
@@ -61,19 +65,6 @@ export default {
   },
 
   methods: {
-    // TODO: quickfixe, change
-    unitNameOrNothing(ingredient) {
-      let name;
-
-      try {
-        name = ingredient.get("unit").get("name");
-      } catch (e) {
-        console.error(e.message);
-      }
-
-      return name || "";
-    },
-
     handleCommand(command) {
       this.$emit("menuAction", { action: command, recipe: this.recipe });
     },

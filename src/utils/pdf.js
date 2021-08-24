@@ -27,7 +27,7 @@ const ingredientMapToString = (map) => {
     let ret = "";
 
     map.forEach(({ quantity, unit }, name) => {
-        ret += `${name.toLowerCase()}    ${quantity} ${unit.get("name")}\n`;
+        ret += `${name.toLowerCase()}    ${quantity} ${unit}\n`;
     })
     return ret;
 }

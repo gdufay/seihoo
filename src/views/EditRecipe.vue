@@ -12,12 +12,12 @@
       <el-select
         v-model="ingredient.ingredient"
         placeholder="Ingredient"
-        value-key="id"
+        value-key="objectId"
       >
         <el-option
           v-for="ingredientItem in ingredientsList"
-          :key="ingredientItem.id"
-          :label="ingredientItem.get('name')"
+          :key="ingredientItem.objectId"
+          :label="ingredientItem.name"
           :value="ingredientItem"
         ></el-option>
       </el-select>
@@ -32,9 +32,9 @@
 
     <el-form-item>
       <el-button @click="addIngredient">Add Ingredient</el-button>
-      <el-button type="primary" @click="onSubmit('recipeForm')"
-        >{{ id ? "Update" : "Add" }}</el-button
-      >
+      <el-button type="primary" @click="onSubmit('recipeForm')">{{
+        id ? "Update" : "Add"
+      }}</el-button>
       <el-button @click="cancel">Cancel</el-button>
     </el-form-item>
   </el-form>
@@ -61,17 +61,12 @@ export default {
   },
 
   created() {
-    // TODO: move to root component
-    if (this.ingredientsList.length === 0) {
-      this.$store.dispatch("getAllIngredients");
-    }
-
     if (!this.id) {
       return;
     }
 
     const recipe = this.$store.state.recipes.recipes.find(
-      (recipe) => recipe.id === this.id
+      (recipe) => recipe.objectId === this.id
     );
 
     if (recipe) {
@@ -93,13 +88,16 @@ export default {
 
     ...mapActions({
       setEditedRecipe: "editedRecipe/setEditedRecipe",
-      submitEditedRecipe: "editedRecipe/submitEditedRecipe",
+      editRecipe: "editedRecipe/editRecipe",
+      createRecipe: "editedRecipe/createRecipe",
       cleanEditedRecipe: "editedRecipe/cleanEditedRecipe",
     }),
 
     onSubmit() {
       // TODO: add/update editedRecipe to store.recipes (when getAll put in root component)
-      this.submitEditedRecipe(); // TODO: check if save succesful
+      const ft = this.id ? this.editRecipe : this.createRecipe;
+
+      ft(); // TODO: check if succesful
       this.$router.back();
     },
 

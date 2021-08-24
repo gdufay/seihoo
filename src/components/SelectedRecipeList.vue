@@ -7,7 +7,7 @@
     <el-scrollbar style="height: 0">
       <recipe-item
         v-for="recipe in recipes"
-        :key="recipe.get('name')"
+        :key="recipe.objectId"
         :recipe="recipe"
         :actions="actions"
         @menuAction="handleMenuAction"

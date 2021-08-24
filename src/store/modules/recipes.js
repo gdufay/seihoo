@@ -1,7 +1,3 @@
-import Parse from "parse/dist/parse.min.js"
-
-const TABLE_NAME = "Recipe";
-
 // TODO: remove duplicate
 const logAndThrow = (e) => {
     console.error(e);
@@ -24,12 +20,11 @@ const getters = {
         const map = new Map();
 
         for (const recipe of state.selectedRecipes) {
-            for (const { ingredient, quantity } of recipe.get("ingredients")) {
-                const ingredientName = ingredient.get("name");
-                const { quantity: oldQuantity = 0 } = map.get(ingredientName) || {};
+            for (const { ingredient: { name, unit }, quantity } of recipe.ingredients) {
+                const { quantity: oldQuantity = 0 } = map.get(name) || {};
 
-                map.set(ingredientName, {
-                    unit: ingredient.get("unit"),
+                map.set(name, {
+                    unit: unit.name,
                     quantity: oldQuantity + quantity,
                 });
             }
@@ -39,16 +34,34 @@ const getters = {
 }
 
 const actions = {
-    getAllRecipes({ commit }) {
-        const query = new Parse.Query(TABLE_NAME);
+    async getAllRecipes({ commit }) {
+        const headers = new Headers({
+            "Content-Type": "application/json",
+            "X-Parse-Application-Id": "0PpmnebENvw8ccfGRSqesLXGVGsRMJOpEvZz2Hei",
+            "X-Parse-REST-API-Key": "Ck76d2h5GmkJSpxB7U26sQyyV6UHZV7qtRxYR2Sg"
+        });
+        const include = "include=ingredients.ingredient,ingredients.ingredient.unit,frequency"
 
-        return query.find()
-            .then(results => commit("setRecipes", results))
+        return fetch(`https://parseapi.back4app.com/classes/Recipe?${include}`, { method: "GET", headers: headers })
+            .then(result => result.json())
+            .then(({ results, code, error }) => {
+                if (results) {
+                    commit("setRecipes", results);
+                } else {
+                    throw Error(`Error code: ${code}: ${error}`);
+                }
+            })
             .catch(logAndThrow);
     },
 
-    removeRecipe({ commit }, recipe) {
-        return recipe.destroy()
+    async removeRecipe({ commit }, recipe) {
+        const headers = new Headers({
+            "Content-Type": "application/json",
+            "X-Parse-Application-Id": "0PpmnebENvw8ccfGRSqesLXGVGsRMJOpEvZz2Hei",
+            "X-Parse-REST-API-Key": "Ck76d2h5GmkJSpxB7U26sQyyV6UHZV7qtRxYR2Sg"
+        });
+
+        return fetch(`https://parseapi.back4app.com/classes/Recipe/${recipe.objectId}`, { method: "DELETE", headers: headers })
             .then(() => commit("removeRecipe", recipe))
             .catch(logAndThrow);
     },
@@ -70,7 +83,7 @@ const mutations = {
     },
 
     selectRecipe(state, recipe) {
-        const index = state.recipes.findIndex(item => item.id === recipe.id);
+        const index = state.recipes.findIndex(item => item.objectId === recipe.objectId);
 
         if (index !== -1) {
             state.recipes.splice(index, 1);
@@ -86,7 +99,7 @@ const mutations = {
     },
 
     unselectRecipe(state, recipe) {
-        const index = state.selectedRecipes.findIndex(item => item.id === recipe.id);
+        const index = state.selectedRecipes.findIndex(item => item.objectId === recipe.objectId);
 
         if (index !== -1) {
             state.selectedRecipes.splice(index, 1);
@@ -95,7 +108,7 @@ const mutations = {
     },
 
     removeRecipe(state, recipe) {
-        const index = state.recipes.findIndex(item => item.id === recipe.id);
+        const index = state.recipes.findIndex(item => item.objectId === recipe.objectId);
 
         if (index !== -1) {
             state.recipes.splice(index, 1);

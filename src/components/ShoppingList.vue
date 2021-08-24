@@ -10,7 +10,7 @@
         :key="name"
         :name="name"
         :quantity="quantity"
-        :unit="unit.get('name')"
+        :unit="unit"
       ></ingredient-item>
     </el-scrollbar>
 

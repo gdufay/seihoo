@@ -1,5 +1,9 @@
 import { getField, updateField } from 'vuex-map-fields';
-import Parse from "parse/dist/parse.min.js"
+
+const logAndThrow = (e) => {
+    console.error(e);
+    throw e;
+}
 
 const state = () => ({
     currentRecipe: null,
@@ -31,25 +35,38 @@ const mutations = {
 
 const actions = {
     setEditedRecipe({ commit }, recipe) {
-        commit("setState", {
-            currentRecipe: recipe, name: recipe.get("name"), ingredients: recipe.get("ingredients")
-        });
+        commit("setState", { currentRecipe: recipe, ...recipe });
     },
 
     cleanEditedRecipe({ commit }) {
-        commit("setState", {
-            currentRecipe: null, name: "", ingredients: []
-        });
+        commit("setState", { currentRecipe: null, name: "", ingredients: [] });
     },
 
-    submitEditedRecipe({ state }) {
-        const recipe = state.currentRecipe || new Parse.Object("Recipe");
-
-        recipe.set({
-            name: state.name,
-            ingredients: state.ingredients
+    async editRecipe({ state }) {
+        const headers = new Headers({
+            "Content-Type": "application/json",
+            "X-Parse-Application-Id": "0PpmnebENvw8ccfGRSqesLXGVGsRMJOpEvZz2Hei",
+            "X-Parse-REST-API-Key": "Ck76d2h5GmkJSpxB7U26sQyyV6UHZV7qtRxYR2Sg"
         });
-        recipe.save();
+        const body = { name: state.name, ingredients: state.ingredients.map(({ ingredient, quantity }) => ({ quantity: quantity, ingredient: { __type: "Pointer", className: "Ingredient", objectId: ingredient.objectId } })) };
+
+        return fetch(`https://parseapi.back4app.com/classes/Recipe/${state.currentRecipe.objectId}`, { method: "PUT", headers: headers, body: JSON.stringify(body) })
+            .catch(logAndThrow);
+    },
+
+    async createRecipe({ state }) {
+        const headers = new Headers({
+            "Content-Type": "application/json",
+            "X-Parse-Application-Id": "0PpmnebENvw8ccfGRSqesLXGVGsRMJOpEvZz2Hei",
+            "X-Parse-REST-API-Key": "Ck76d2h5GmkJSpxB7U26sQyyV6UHZV7qtRxYR2Sg"
+        });
+        const body = { name: state.name, ingredients: state.ingredients.map(({ ingredient, quantity }) => ({ quantity: quantity, ingredient: { __type: "Pointer", className: "Ingredient", objectId: ingredient.objectId } })) };
+        console.log(body)
+
+        return fetch(`https://parseapi.back4app.com/classes/Recipe`, { method: "POST", headers: headers, body: JSON.stringify(body) })
+            .then(results => results.json())
+            .then(r => console.log(r))
+            .catch(logAndThrow);
     },
 };
 
