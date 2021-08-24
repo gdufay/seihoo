@@ -45,7 +45,7 @@ const actions = {
             ingredients: state.ingredients.map(({ ingredient, quantity }) => ({ quantity: quantity, ingredient: createPointer("Ingredient", ingredient.objectId) }))
         };
 
-        return fetchWrapper(`https://parseapi.back4app.com/classes/Recipe/${state.currentRecipe.objectId}`, { method: "PUT", body: body })
+        return fetchWrapper(`https://parseapi.back4app.com/classes/Recipe/${state.currentRecipe.objectId}`, { method: "PUT", body: body, auth: true })
             .catch(logAndThrow);
     },
 
@@ -55,7 +55,7 @@ const actions = {
             ingredients: state.ingredients.map(({ ingredient, quantity }) => ({ quantity: quantity, ingredient: createPointer("Ingredient", ingredient.objectId) }))
         };
 
-        return fetchWrapper(`https://parseapi.back4app.com/classes/Recipe`, { method: "POST", body: body })
+        return fetchWrapper(`https://parseapi.back4app.com/classes/Recipe`, { method: "POST", body: body, auth: true })
             .then(r => console.log(r)) // TODO: handle error and add to recipes
             .catch(logAndThrow);
     },

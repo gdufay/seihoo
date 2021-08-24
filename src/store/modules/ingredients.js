@@ -21,7 +21,7 @@ const actions = {
 	},
 
 	async removeIngredient({ commit }, ingredient) {
-		return fetchWrapper(`https://parseapi.back4app.com/classes/Ingredient/${ingredient.objectId}`, { method: "DELETE" })
+		return fetchWrapper(`https://parseapi.back4app.com/classes/Ingredient/${ingredient.objectId}`, { method: "DELETE", auth: true })
 			.then(() => commit("removeIngredient", ingredient))
 			.catch(logAndThrow);
 	},
@@ -29,7 +29,7 @@ const actions = {
 	async addIngredient({ commit }, ingredient) {
 		const pointer = createPointer("Unit", ingredient.unit.objectId);
 
-		return fetchWrapper(`https://parseapi.back4app.com/classes/Ingredient`, { method: "POST", body: { name: ingredient.name, unit: pointer } })
+		return fetchWrapper(`https://parseapi.back4app.com/classes/Ingredient`, { method: "POST", body: { name: ingredient.name, unit: pointer }, auth: true })
 			.then(({ objectId }) => commit("addIngredient", { objectId: objectId, ...ingredient }))
 			.catch(logAndThrow);
 	},
@@ -37,7 +37,7 @@ const actions = {
 	async editIngredient({ commit }, { objectId, ingredient }) {
 		const pointer = createPointer("Unit", ingredient.unit.objectId);
 
-		return fetchWrapper(`https://parseapi.back4app.com/classes/Ingredient/${objectId}`, { method: "PUT", body: { name: ingredient.name, unit: pointer } })
+		return fetchWrapper(`https://parseapi.back4app.com/classes/Ingredient/${objectId}`, { method: "PUT", body: { name: ingredient.name, unit: pointer }, auth: true })
 			.then(() => commit("editIngredient", { objectId: objectId, ...ingredient }))
 			.catch(logAndThrow);
 	},

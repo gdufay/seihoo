@@ -40,7 +40,7 @@ const actions = {
     },
 
     async removeRecipe({ commit }, recipe) {
-        return fetch(`https://parseapi.back4app.com/classes/Recipe/${recipe.objectId}`, { method: "DELETE" })
+        return fetch(`https://parseapi.back4app.com/classes/Recipe/${recipe.objectId}`, { method: "DELETE", auth: true })
             .then(() => commit("removeRecipe", recipe))
             .catch(logAndThrow);
     },
