@@ -18,11 +18,11 @@
           <el-input placeholder="Name" v-model="form.name"></el-input>
         </el-form-item>
         <el-form-item label="Unit">
-          <el-select v-model="form.unit" placeholder="Unit" value-key="id">
+          <el-select v-model="form.unit" placeholder="Unit" value-key="objectId">
             <el-option
               v-for="unit in units"
-              :key="unit.id"
-              :label="unit.get('name')"
+              :key="unit.objectId"
+              :label="unit.name"
               :value="unit"
             ></el-option>
           </el-select>

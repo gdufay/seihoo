@@ -1,5 +1,3 @@
-import Parse from "parse/dist/parse.min.js"
-
 const state = () => ({
     units: []
 })
@@ -14,12 +12,22 @@ const mutations = {
 
 const actions = {
     async getAllUnits({ commit }) {
-        const query = new Parse.Query("Unit");
+        const headers = new Headers({
+            "Content-Type": "application/json",
+            "X-Parse-Application-Id": "0PpmnebENvw8ccfGRSqesLXGVGsRMJOpEvZz2Hei",
+            "X-Parse-REST-API-Key": "Ck76d2h5GmkJSpxB7U26sQyyV6UHZV7qtRxYR2Sg"
+        })
 
-        // TODO: propagate error
-        query.find()
-            .then(results => commit("setUnits", results))
-            .catch(e => console.error(e));
+        fetch("https://parseapi.back4app.com/classes/Unit", { method: "GET", headers: headers })
+            .then(result => result.json())
+            .then(({ results, code, error }) => {
+                if (results) {
+                    commit("setUnits", results);
+                } else {
+                    throw Error(`Error code: ${code}: ${error}`);
+                }
+            })
+            .catch(e => console.error(e)); // TODO: propagate error
     }
 }
 

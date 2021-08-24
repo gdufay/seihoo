@@ -40,15 +40,14 @@
           </el-form-item>
           <el-form-item>
             <el-select
-              ref="unitSelect"
               v-model="form.unit"
               placeholder="Ingredient unit"
-              value-key="id"
+              value-key="objectId"
             >
               <el-option
                 v-for="unit in units"
-                :key="unit.id"
-                :label="unit.get('name')"
+                :key="unit.objectId"
+                :label="unit.name"
                 :value="unit"
               ></el-option>
             </el-select>
