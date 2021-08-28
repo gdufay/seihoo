@@ -1,8 +1,3 @@
-export const logAndThrow = (e) => {
-    console.error(e);
-    throw e;
-}
-
 export const getRandomInt = (min, max) => {
     min = Math.ceil(min);
     max = Math.floor(max);

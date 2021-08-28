@@ -1,5 +1,5 @@
-import { logAndThrow, createPointer } from "../../utils/utils";
-import fetchWrapper from "../../utils/fetchWrapper";
+import { createPointer } from "../../utils/utils";
+import FetchWrapper from "../../utils/FetchWrapper";
 
 const state = () => ({
 	ingredients: [],
@@ -9,37 +9,36 @@ const getters = {};
 
 const actions = {
 	async getAllIngredients({ commit }) {
-		return fetchWrapper("https://parseapi.back4app.com/classes/Ingredient?include=unit")
-			.then(({ results, code, error }) => {
-				if (results) {
-					commit("setIngredients", results);
-				} else {
-					throw Error(`Error code: ${code}: ${error}`);
-				}
-			})
-			.catch(logAndThrow);
+		return new FetchWrapper("https://parseapi.back4app.com/classes/Ingredient?include=unit")
+			.fetch()
+			.then(({ results }) => commit("setIngredients", results));
 	},
 
 	async removeIngredient({ commit }, ingredient) {
-		return fetchWrapper(`https://parseapi.back4app.com/classes/Ingredient/${ingredient.objectId}`, { method: "DELETE", auth: true })
+		return new FetchWrapper(`https://parseapi.back4app.com/classes/Ingredient/${ingredient.objectId}`, "DELETE")
+			.requireAuth()
+			.fetch()
 			.then(() => commit("removeIngredient", ingredient))
-			.catch(logAndThrow);
 	},
 
 	async addIngredient({ commit }, ingredient) {
 		const pointer = createPointer("Unit", ingredient.unit.objectId);
 
-		return fetchWrapper(`https://parseapi.back4app.com/classes/Ingredient`, { method: "POST", body: { name: ingredient.name, unit: pointer }, auth: true })
-			.then(({ objectId }) => commit("addIngredient", { objectId: objectId, ...ingredient }))
-			.catch(logAndThrow);
+		return new FetchWrapper(`https://parseapi.back4app.com/classes/Ingredient`, "POST", { name: ingredient.name, unit: pointer })
+			.stringify()
+			.requireAuth()
+			.fetch()
+			.then(({ objectId }) => commit("addIngredient", { objectId: objectId, ...ingredient }));
 	},
 
 	async editIngredient({ commit }, { objectId, ingredient }) {
 		const pointer = createPointer("Unit", ingredient.unit.objectId);
 
-		return fetchWrapper(`https://parseapi.back4app.com/classes/Ingredient/${objectId}`, { method: "PUT", body: { name: ingredient.name, unit: pointer }, auth: true })
-			.then(() => commit("editIngredient", { objectId: objectId, ...ingredient }))
-			.catch(logAndThrow);
+		return new FetchWrapper(`https://parseapi.back4app.com/classes/Ingredient/${objectId}`, "PUT", { name: ingredient.name, unit: pointer })
+			.stringify()
+			.requireAuth()
+			.fetch()
+			.then(() => commit("editIngredient", { objectId: objectId, ...ingredient }));
 	},
 };
 

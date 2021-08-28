@@ -1,6 +1,6 @@
 import { getField, updateField } from 'vuex-map-fields';
-import { logAndThrow, createPointer } from '../../utils/utils';
-import fetchWrapper from '../../utils/fetchWrapper';
+import { createPointer } from '../../utils/utils';
+import FetchWrapper from '../../utils/FetchWrapper';
 
 const state = () => ({
     currentRecipe: null,
@@ -45,8 +45,10 @@ const actions = {
             ingredients: state.ingredients.map(({ ingredient, quantity }) => ({ quantity: quantity, ingredient: createPointer("Ingredient", ingredient.objectId) }))
         };
 
-        return fetchWrapper(`https://parseapi.back4app.com/classes/Recipe/${state.currentRecipe.objectId}`, { method: "PUT", body: body, auth: true })
-            .catch(logAndThrow);
+        return new FetchWrapper(`https://parseapi.back4app.com/classes/Recipe/${state.currentRecipe.objectId}`, "PUT", body)
+            .stringify()
+            .requireAuth()
+            .fetch();
     },
 
     async createRecipe({ state }) {
@@ -55,9 +57,10 @@ const actions = {
             ingredients: state.ingredients.map(({ ingredient, quantity }) => ({ quantity: quantity, ingredient: createPointer("Ingredient", ingredient.objectId) }))
         };
 
-        return fetchWrapper(`https://parseapi.back4app.com/classes/Recipe`, { method: "POST", body: body, auth: true })
-            .then(r => console.log(r)) // TODO: handle error and add to recipes
-            .catch(logAndThrow);
+        return new FetchWrapper(`https://parseapi.back4app.com/classes/Recipe`, "POST", body)
+            .stringify()
+            .requireAuth()
+            .fetch();
     },
 };
 

@@ -1,5 +1,5 @@
-import fetchWrapper from "../../utils/fetchWrapper";
-import { logAndThrow, getRandomInt } from "../../utils/utils";
+import FetchWrapper from "../../utils/FetchWrapper";
+import { getRandomInt } from "../../utils/utils";
 
 const state = () => ({
     recipes: [],
@@ -28,21 +28,16 @@ const actions = {
     async getAllRecipes({ commit }) {
         const include = "include=ingredients.ingredient,ingredients.ingredient.unit,frequency"
 
-        return fetchWrapper(`https://parseapi.back4app.com/classes/Recipe?${include}`)
-            .then(({ results, code, error }) => {
-                if (results) {
-                    commit("setRecipes", results);
-                } else {
-                    throw Error(`Error code: ${code}: ${error}`);
-                }
-            })
-            .catch(logAndThrow);
+        return new FetchWrapper(`https://parseapi.back4app.com/classes/Recipe?${include}`)
+            .fetch()
+            .then(({ results }) => commit("setRecipes", results));
     },
 
     async removeRecipe({ commit }, recipe) {
-        return fetch(`https://parseapi.back4app.com/classes/Recipe/${recipe.objectId}`, { method: "DELETE", auth: true })
-            .then(() => commit("removeRecipe", recipe))
-            .catch(logAndThrow);
+        return new FetchWrapper(`https://parseapi.back4app.com/classes/Recipe/${recipe.objectId}`, "DELETE")
+            .requireAuth()
+            .fetch()
+            .then(() => commit("removeRecipe", recipe));
     },
 
     async generateRandom({ state, commit }, value) {

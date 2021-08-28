@@ -1,4 +1,4 @@
-import fetchWrapper from "../../utils/fetchWrapper";
+import FetchWrapper from "../../utils/FetchWrapper";
 
 const state = () => ({
     units: []
@@ -14,15 +14,9 @@ const mutations = {
 
 const actions = {
     async getAllUnits({ commit }) {
-        return fetchWrapper("https://parseapi.back4app.com/classes/Unit")
-            .then(({ results, error }) => {
-                if (results) {
-                    commit("setUnits", results);
-                } else {
-                    throw Error(`Error: ${error}`);
-                }
-            })
-            .catch(e => console.error(e));
+        return new FetchWrapper("https://parseapi.back4app.com/classes/Unit")
+            .fetch()
+            .then(({ results }) => commit("setUnits", results));
     }
 }
 

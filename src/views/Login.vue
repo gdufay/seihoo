@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import fetchWrapper from "../utils/fetchWrapper";
+import FetchWrapper from "../utils/FetchWrapper";
 
 export default {
   name: "Login",
@@ -60,16 +60,13 @@ export default {
           const username = encodeURIComponent(this.form.username);
           const password = encodeURIComponent(this.form.password);
 
-          fetchWrapper(
+          new FetchWrapper(
             `https://parseapi.back4app.com/login?username=${username}&password=${password}`
           )
-            .then(({ sessionToken, error }) => {
-              if (sessionToken) {
-                window.localStorage.setItem("sessionToken", sessionToken);
-                this.$router.replace("/");
-              } else {
-                throw Error(`Error: ${error}`);
-              }
+            .fetch()
+            .then(({ sessionToken }) => {
+              window.localStorage.setItem("sessionToken", sessionToken);
+              this.$router.replace("/");
             })
             .catch((e) => {
               this.loginError = "";
