@@ -26,7 +26,7 @@ const getters = {
 
 const actions = {
     async getAllRecipes({ commit }) {
-        const include = "include=ingredients.ingredient,ingredients.ingredient.unit,frequency"
+        const include = "include=ingredients.ingredient,ingredients.ingredient.unit"
 
         return new FetchWrapper(`https://parseapi.back4app.com/classes/Recipe?${include}`)
             .fetch()

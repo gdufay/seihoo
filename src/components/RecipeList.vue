@@ -9,8 +9,17 @@
         <el-collapse-item
           v-for="recipe in recipes"
           :key="recipe.objectId"
-          :title="recipe.name"
+          :name="recipe.name"
         >
+          <template #title>
+            <div>
+              {{ recipe.name }}
+              <el-tag type="info" effect="dark" size="mini">
+                {{ frequencyToString(recipe.frequency) }}
+              </el-tag>
+            </div>
+          </template>
+
           <ingredient-item
             v-for="{ ingredient, quantity } in recipe.ingredients"
             :key="ingredient.objectId"
@@ -70,6 +79,7 @@
 <script>
 import { mapMutations, mapState } from "vuex";
 import IngredientItem from "./IngredientItem.vue";
+import { frequencyToString } from "../utils/utils";
 
 export default {
   name: "recipe-list",
@@ -90,6 +100,10 @@ export default {
 
   methods: {
     ...mapMutations(["selectRecipe"]),
+
+    frequencyToString(frequency) {
+      return frequencyToString(frequency);
+    },
 
     editRecipe(recipe) {
       this.$router.push("/edit/" + recipe.objectId);
