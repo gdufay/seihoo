@@ -1,83 +1,63 @@
 <template>
-  <el-card>
-    <div class="card-header column-header">
-      <span>Recipes</span>
-    </div>
+  <section class="Recipes">
+    <div class="container">
+      <div class="header">
+        <h2 class="title">Recipes</h2>
 
-    <el-scrollbar style="height: 0">
-      <el-collapse v-model="activeRecipes">
-        <el-collapse-item
-          v-for="recipe in recipes"
-          :key="recipe.objectId"
-          :name="recipe.name"
-        >
-          <template #title>
-            <el-checkbox @change="selectRecipe($event, recipe.objectId)">
-              {{ recipe.name }}
-              <el-tag type="primary" effect="dark" size="mini">
-                {{ frequencyToString(recipe.frequency) }}
-              </el-tag>
-            </el-checkbox>
-          </template>
+        <template v-if="selectedRecipes.size">
+          <el-button-group>
+            <el-button plain type="info" @click="select">SELECT</el-button>
+            <el-button plain type="info" @click="remove">REMOVE</el-button>
+          </el-button-group>
+        </template>
+        <el-button v-else plain type="info" @click="add">ADD RECIPE</el-button>
+      </div>
 
-          <ingredient-item
-            v-for="{ ingredient, quantity } in recipe.ingredients"
-            :key="ingredient.objectId"
-            :name="ingredient.name"
-            :quantity="quantity"
-            :unit="ingredient.unit.name"
-          ></ingredient-item>
+      <el-scrollbar>
+        <el-collapse v-model="activeRecipes">
+          <el-collapse-item
+            v-for="recipe in recipes"
+            :key="recipe.objectId"
+            :name="recipe.name"
+            class="recipe"
+          >
+            <template #title>
+              <el-checkbox @change="selectRecipe($event, recipe.objectId)">
+                {{ recipe.name }}
+                <el-tag type="primary" effect="dark" size="mini">
+                  {{ frequencyToString(recipe.frequency) }}
+                </el-tag>
+              </el-checkbox>
+            </template>
 
-          <div class="button-group__container">
-            <el-button-group>
-              <el-tooltip content="Select">
-                <el-button
-                  type="primary"
-                  @click="selectRecipe(recipe)"
-                  size="mini"
-                  plain
-                  icon="el-icon-check"
-                ></el-button>
-              </el-tooltip>
+            <ingredient-item
+              v-for="{ ingredient, quantity } in recipe.ingredients"
+              :key="ingredient.objectId"
+              :name="ingredient.name"
+              :quantity="quantity"
+              :unit="ingredient.unit.name"
+            ></ingredient-item>
+
+            <div class="button-group__container">
               <el-tooltip content="Edit">
                 <el-button
                   type="primary"
-                  @click="editRecipe(recipe)"
+                  @click="edit(recipe)"
                   size="mini"
                   plain
                   icon="el-icon-edit"
                 ></el-button>
               </el-tooltip>
-              <el-tooltip content="Remove">
-                <el-button
-                  type="primary"
-                  @click="removeRecipe(recipe)"
-                  size="mini"
-                  plain
-                  icon="el-icon-delete"
-                ></el-button>
-              </el-tooltip>
-            </el-button-group>
-          </div>
-        </el-collapse-item>
-      </el-collapse>
-    </el-scrollbar>
-
-    <div class="card__bottom">
-      <el-tooltip content="Add recipe">
-        <el-button
-          type="success"
-          @click="add"
-          icon="el-icon-plus"
-          circle
-        ></el-button>
-      </el-tooltip>
+            </div>
+          </el-collapse-item>
+        </el-collapse>
+      </el-scrollbar>
     </div>
-  </el-card>
+  </section>
 </template>
 
 <script>
-import { mapMutations, mapState } from "vuex";
+import { mapState } from "vuex";
 import IngredientItem from "./IngredientItem.vue";
 import { frequencyToString } from "../utils/utils";
 
@@ -89,7 +69,7 @@ export default {
   data() {
     return {
       activeRecipes: [],
-      selectedRecipes: [],
+      selectedRecipes: new Set(),
     };
   },
 
@@ -100,21 +80,28 @@ export default {
   },
 
   methods: {
-    ...mapMutations(["selectRecipe"]),
-
     frequencyToString(frequency) {
       return frequencyToString(frequency);
     },
 
-    editRecipe(recipe) {
+    edit(recipe) {
       this.$router.push("/edit/" + recipe.objectId);
+    },
+
+    select() {
+      this.selectedRecipes.forEach((recipe) => {
+        this.$store.commit("selectRecipe", recipe);
+        this.selectedRecipes.delete(recipe);
+      });
     },
 
     add() {
       this.$router.push("/new");
     },
 
-    removeRecipe(recipe) {
+    remove() {
+      // TODO: change to handle multi recipes
+      /*
       this.$store
         .dispatch("removeRecipe", recipe)
         .then(() =>
@@ -123,28 +110,47 @@ export default {
         .catch(() =>
           this.$message({ type: "error", message: "Ohoh... A problem occured" })
         );
+        */
     },
 
     selectRecipe(value, objectId) {
       if (value) {
-        this.selectedRecipes.push(objectId);
+        this.selectedRecipes.add(objectId);
       } else {
-        const index = this.selectedRecipes.indexOf(objectId);
-
-        this.selectedRecipes.splice(index, 1);
+        this.selectedRecipes.delete(objectId);
       }
     },
   },
 };
 </script>
 
-<style>
-.el-collapse-item__header {
-  padding: 0.25rem 0.5rem;
+<style scoped>
+.container {
+  height: 100%;
+  border-radius: 4px;
+  background-color: #fff;
+  overflow: hidden;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.08); /* var(--shadow-depth-3) */
 }
 
-.el-collapse-item__content {
-  padding: 0.5rem;
+.header {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 24px;
+}
+
+.title {
+  line-height: 32px;
+  font-size: 16px;
+  color: var(--c-gray);
+}
+
+.recipe {
+  padding: 12px 24px;
+}
+
+.el-collapse {
+  border: none;
 }
 
 .button-group__container {
