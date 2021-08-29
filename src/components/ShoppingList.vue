@@ -1,30 +1,23 @@
 <template>
-  <el-card>
-    <div class="card-header column-header">
-      <span>Shopping List</span>
-    </div>
+  <section>
+    <div class="container">
+      <div class="header">
+        <h2 class="title">Shopping List</h2>
+        <el-button plain type="info" @click="download">DOWNLOAD</el-button>
+      </div>
 
-    <el-scrollbar style="height: 0">
-      <ingredient-item
-        v-for="[name, { quantity, unit }] in ingredients"
-        :key="name"
-        :name="name"
-        :quantity="quantity"
-        :unit="unit"
-      ></ingredient-item>
-    </el-scrollbar>
-
-    <div class="card__bottom">
-      <el-tooltip content="Download as pdf">
-        <el-button
-          type="info"
-          @click="download"
-          icon="el-icon-download"
-          circle
-        ></el-button>
-      </el-tooltip>
+      <el-scrollbar>
+        <ingredient-item
+          v-for="[name, { quantity, unit }] in ingredients"
+          :key="name"
+          :name="name"
+          :quantity="quantity"
+          :unit="unit"
+          class="ingredient"
+        ></ingredient-item>
+      </el-scrollbar>
     </div>
-  </el-card>
+  </section>
 </template>
 
 <script>

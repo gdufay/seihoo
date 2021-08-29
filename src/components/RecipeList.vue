@@ -124,7 +124,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 .container {
   height: 100%;
   border-radius: 4px;
@@ -145,7 +145,7 @@ export default {
   color: var(--c-gray);
 }
 
-.recipe {
+.recipe, .ingredient {
   padding: 12px 24px;
 }
 

@@ -1,50 +1,45 @@
 <template>
-  <el-card>
-    <div class="card-header column-header">
-      <span>Selected Recipes</span>
+  <section class="SelectedRecipes">
+    <div class="container">
+      <div class="header">
+        <h2 class="title">Selected Recipes</h2>
+        <el-button plain type="info" @click="generateRandom">
+          GENERATE
+        </el-button>
+      </div>
+
+      <el-scrollbar>
+        <el-collapse v-model="activeRecipes">
+          <el-collapse-item
+            v-for="recipe in recipes"
+            :key="recipe.objectId"
+            :title="recipe.name"
+            class="recipe"
+          >
+            <ingredient-item
+              v-for="{ ingredient, quantity } in recipe.ingredients"
+              :key="ingredient.objectId"
+              :name="ingredient.name"
+              :quantity="quantity"
+              :unit="ingredient.unit.name"
+            ></ingredient-item>
+
+            <div class="button-group__container">
+              <el-tooltip content="Unselect">
+                <el-button
+                  type="primary"
+                  @click="unselectRecipe(recipe)"
+                  size="mini"
+                  plain
+                  icon="el-icon-close"
+                ></el-button>
+              </el-tooltip>
+            </div>
+          </el-collapse-item>
+        </el-collapse>
+      </el-scrollbar>
     </div>
-
-    <el-scrollbar style="height: 0">
-      <el-collapse v-model="activeRecipes">
-        <el-collapse-item
-          v-for="recipe in recipes"
-          :key="recipe.objectId"
-          :title="recipe.name"
-        >
-          <ingredient-item
-            v-for="{ ingredient, quantity } in recipe.ingredients"
-            :key="ingredient.objectId"
-            :name="ingredient.name"
-            :quantity="quantity"
-            :unit="ingredient.unit.name"
-          ></ingredient-item>
-
-          <div class="button-group__container">
-            <el-tooltip content="Unselect">
-              <el-button
-                type="primary"
-                @click="unselectRecipe(recipe)"
-                size="mini"
-                plain
-                icon="el-icon-close"
-              ></el-button>
-            </el-tooltip>
-          </div>
-        </el-collapse-item>
-      </el-collapse>
-    </el-scrollbar>
-
-    <div class="card__bottom">
-      <el-tooltip content="Get random recipes">
-        <el-button
-          type="warning"
-          @click="generateRandom"
-          icon="el-icon-setting"
-          circle
-        ></el-button>
-      </el-tooltip>
-    </div>
-  </el-card>
+  </section>
 </template>
 
 <script>
