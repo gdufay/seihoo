@@ -12,12 +12,12 @@
           :name="recipe.name"
         >
           <template #title>
-            <div>
+            <el-checkbox @change="selectRecipe($event, recipe.objectId)">
               {{ recipe.name }}
-              <el-tag type="info" effect="dark" size="mini">
+              <el-tag type="primary" effect="dark" size="mini">
                 {{ frequencyToString(recipe.frequency) }}
               </el-tag>
-            </div>
+            </el-checkbox>
           </template>
 
           <ingredient-item
@@ -89,6 +89,7 @@ export default {
   data() {
     return {
       activeRecipes: [],
+      selectedRecipes: [],
     };
   },
 
@@ -122,6 +123,16 @@ export default {
         .catch(() =>
           this.$message({ type: "error", message: "Ohoh... A problem occured" })
         );
+    },
+
+    selectRecipe(value, objectId) {
+      if (value) {
+        this.selectedRecipes.push(objectId);
+      } else {
+        const index = this.selectedRecipes.indexOf(objectId);
+
+        this.selectedRecipes.splice(index, 1);
+      }
     },
   },
 };
