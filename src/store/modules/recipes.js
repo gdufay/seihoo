@@ -72,12 +72,12 @@ const mutations = {
         state.selectedRecipes.push(recipe);
     },
 
-    unselectRecipe(state, recipe) {
-        const index = state.selectedRecipes.findIndex(item => item.objectId === recipe.objectId);
+    unselectRecipe(state, id) {
+        const index = state.selectedRecipes.findIndex(item => item.objectId === id);
 
         if (index !== -1) {
+            state.recipes.push(state.selectedRecipes[index]);
             state.selectedRecipes.splice(index, 1);
-            state.recipes.push(recipe);
         }
     },
 

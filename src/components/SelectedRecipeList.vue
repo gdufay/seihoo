@@ -3,7 +3,15 @@
     <div class="container">
       <div class="header">
         <h2 class="title">Selected Recipes</h2>
-        <el-button plain type="info" @click="generateRandom">
+        <el-button
+          v-if="selectedRecipes.size"
+          plain
+          type="info"
+          @click="unselect"
+        >
+          UNSELECT
+        </el-button>
+        <el-button v-else plain type="info" @click="generateRandom">
           GENERATE
         </el-button>
       </div>
@@ -13,9 +21,15 @@
           <el-collapse-item
             v-for="recipe in recipes"
             :key="recipe.objectId"
-            :title="recipe.name"
+            :name="recipe.name"
             class="recipe"
           >
+            <template #title>
+              <el-checkbox @change="selectRecipe($event, recipe.objectId)">
+                {{ recipe.name }}
+              </el-checkbox>
+            </template>
+
             <ingredient-item
               v-for="{ ingredient, quantity } in recipe.ingredients"
               :key="ingredient.objectId"
@@ -23,18 +37,6 @@
               :quantity="quantity"
               :unit="ingredient.unit.name"
             ></ingredient-item>
-
-            <div class="button-group__container">
-              <el-tooltip content="Unselect">
-                <el-button
-                  type="primary"
-                  @click="unselectRecipe(recipe)"
-                  size="mini"
-                  plain
-                  icon="el-icon-close"
-                ></el-button>
-              </el-tooltip>
-            </div>
           </el-collapse-item>
         </el-collapse>
       </el-scrollbar>
@@ -43,7 +45,7 @@
 </template>
 
 <script>
-import { mapMutations, mapState } from "vuex";
+import { mapState } from "vuex";
 import IngredientItem from "./IngredientItem.vue";
 
 export default {
@@ -54,6 +56,7 @@ export default {
   data() {
     return {
       activeRecipes: [],
+      selectedRecipes: new Set(),
     };
   },
 
@@ -64,8 +67,6 @@ export default {
   },
 
   methods: {
-    ...mapMutations(["unselectRecipe"]),
-
     generateRandom() {
       this.$prompt(
         "Please input the number of recipe you want",
@@ -81,6 +82,21 @@ export default {
         .catch(() =>
           this.$message({ type: "info", message: "Random canceled" })
         );
+    },
+
+    selectRecipe(value, objectId) {
+      if (value) {
+        this.selectedRecipes.add(objectId);
+      } else {
+        this.selectedRecipes.delete(objectId);
+      }
+    },
+
+    unselect() {
+      this.selectedRecipes.forEach((recipe) => {
+        this.$store.commit("unselectRecipe", recipe);
+        this.selectedRecipes.delete(recipe);
+      });
     },
   },
 };
