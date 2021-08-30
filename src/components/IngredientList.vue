@@ -27,6 +27,7 @@
           @cancel="onCancel"
           @submit="onSubmit"
           :ingredient="ingredientEdited"
+          v-loading="loading"
         ></ingredient-form>
       </el-dialog>
     </div>
@@ -47,6 +48,7 @@ export default {
     return {
       dialogFormVisible: false,
       ingredientEdited: null,
+      loading: false,
     };
   },
 
@@ -63,6 +65,8 @@ export default {
     },
 
     addIngredient(formIngredient) {
+      this.loading = true;
+
       this.$store
         .dispatch("addIngredient", formIngredient)
         .then(() => {
@@ -71,10 +75,13 @@ export default {
         })
         .catch(() =>
           this.$message({ type: "error", message: "Ohoh... A problem occured" })
-        );
+        )
+        .finally(() => (this.loading = false));
     },
 
     editIngredient(formIngredient) {
+      this.loading = true;
+
       this.$store
         .dispatch("editIngredient", {
           objectId: this.ingredientEdited.objectId,
@@ -86,7 +93,8 @@ export default {
         })
         .catch(() =>
           this.$message({ type: "error", message: "Ohoh... A problem occured" })
-        );
+        )
+        .finally(() => (this.loading = false));
     },
 
     onCancel() {
@@ -100,6 +108,8 @@ export default {
     },
 
     onRemove(ingredient) {
+      this.loading = true;
+
       this.$store
         .dispatch("removeIngredient", ingredient)
         .then(() =>
@@ -107,7 +117,8 @@ export default {
         )
         .catch(() =>
           this.$message({ type: "error", message: "Ohoh... A problem occured" })
-        );
+        )
+        .finally(() => (this.loading = false));
     },
   },
 };
