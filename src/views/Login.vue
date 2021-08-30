@@ -1,5 +1,5 @@
 <template>
-  <el-form ref="form" :model="form" :rules="rules" v-loading="loading">
+  <el-form ref="form" :model="form" :rules="rules" v-loading.fullscreen.lock="loading">
     <h1 class="form-header">Please sign in</h1>
 
     <el-form-item prop="username" :error="loginError">
