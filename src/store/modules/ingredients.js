@@ -22,9 +22,10 @@ const actions = {
 	},
 
 	async addIngredient({ commit }, ingredient) {
-		const pointer = createPointer("Unit", ingredient.unit.objectId);
+		const { name, type, unit } = ingredient;
+		const pointer = createPointer("Unit", unit.objectId);
 
-		return new FetchWrapper(`https://parseapi.back4app.com/classes/Ingredient`, "POST", { name: ingredient.name, unit: pointer })
+		return new FetchWrapper(`https://parseapi.back4app.com/classes/Ingredient`, "POST", { name: name, unit: pointer, type: type })
 			.stringify()
 			.requireAuth()
 			.fetch()

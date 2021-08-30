@@ -35,6 +35,16 @@
               ></el-option>
             </el-select>
           </el-form-item>
+          <el-form-item label="Type">
+            <el-select v-model="form.type" placeholder="Type" value-key="name">
+              <el-option
+                v-for="(type, name) in ingredientType"
+                :key="name"
+                :label="type.text"
+                :value="name"
+              ></el-option>
+            </el-select>
+          </el-form-item>
         </el-form>
 
         <template #footer>
@@ -53,6 +63,7 @@
 <script>
 import { mapState } from "vuex";
 import Ingredient from "./Ingredient.vue";
+import { ingredientType } from "../utils/utils";
 
 export default {
   name: "ingredient-list",
@@ -65,7 +76,9 @@ export default {
       form: {
         name: "",
         unit: null,
+        type: "",
       },
+      ingredientType: ingredientType,
     };
   },
 
@@ -103,5 +116,4 @@ export default {
   display: flex;
   flex-direction: column;
 }
-
 </style>
