@@ -44,6 +44,8 @@ export default {
 
   emits: ["cancel", "submit"],
 
+  props: ["ingredient"],
+
   data() {
     return {
       ingredientType: ingredientType,
@@ -53,6 +55,14 @@ export default {
         type: "",
       },
     };
+  },
+
+  mounted() {
+    if (this.ingredient) {
+      const { name, unit, type } = this.ingredient;
+
+      this.form = { name: name, unit: unit, type: type };
+    }
   },
 
   computed: {

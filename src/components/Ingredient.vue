@@ -4,70 +4,32 @@
       <el-avatar class="ingredient__avatar" :icon="typeToIcon"></el-avatar>
     </el-tooltip>
 
-    <template v-if="!formVisible">
-      <div class="ingredient__text">
-        <p class="ingredient__primary-text">
-          {{ ingredient.name }}
-        </p>
-        <p class="ingredient__secondary-text">
-          {{ ingredient.unit.name }}
-        </p>
-      </div>
+    <div class="ingredient__text">
+      <p class="ingredient__primary-text">
+        {{ ingredient.name }}
+      </p>
+      <p class="ingredient__secondary-text">
+        {{ ingredient.unit.name }}
+      </p>
+    </div>
 
-      <el-dropdown trigger="click" @command="handleCommand">
-        <el-icon class="ingredient__meta">
-          <more-filled />
-        </el-icon>
+    <el-dropdown trigger="click" @command="handleCommand">
+      <el-icon class="ingredient__meta">
+        <more-filled />
+      </el-icon>
 
-        <template #dropdown>
-          <el-dropdown-menu>
-            <el-dropdown-item :command="EDIT_COMMAND">Edit</el-dropdown-item>
-            <el-dropdown-item :command="REMOVE_COMMAND"
-              >Remove</el-dropdown-item
-            >
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
-    </template>
-
-    <template v-else>
-      <el-form ref="form" :model="form" class="ingredient__form">
-        <el-form-item class="ingredient__text">
-          <el-form-item>
-            <el-input
-              ref="nameInput"
-              v-model="form.name"
-              placeholder="Ingredient name"
-            ></el-input>
-          </el-form-item>
-          <el-form-item>
-            <el-select
-              v-model="form.unit"
-              placeholder="Ingredient unit"
-              value-key="objectId"
-            >
-              <el-option
-                v-for="unit in units"
-                :key="unit.objectId"
-                :label="unit.name"
-                :value="unit"
-              ></el-option>
-            </el-select>
-          </el-form-item>
-        </el-form-item>
-        <el-form-item>
-          <el-icon @click="handleEditConfirm">
-            <check />
-          </el-icon>
-        </el-form-item>
-      </el-form>
-    </template>
+      <template #dropdown>
+        <el-dropdown-menu>
+          <el-dropdown-item :command="EDIT_COMMAND">Edit</el-dropdown-item>
+          <el-dropdown-item :command="REMOVE_COMMAND">Remove</el-dropdown-item>
+        </el-dropdown-menu>
+      </template>
+    </el-dropdown>
   </div>
 </template>
 
 <script>
-import { MoreFilled, Check } from "@element-plus/icons";
-import { mapState } from "vuex";
+import { MoreFilled } from "@element-plus/icons";
 import { ingredientType } from "../utils/utils";
 
 const EDIT_COMMAND = "edit";
@@ -78,7 +40,6 @@ export default {
 
   components: {
     MoreFilled,
-    Check,
   },
 
   props: {
@@ -88,27 +49,16 @@ export default {
     },
   },
 
+  emits: ["edit", "remove"],
+
   data() {
     return {
       EDIT_COMMAND: EDIT_COMMAND,
       REMOVE_COMMAND: REMOVE_COMMAND,
-      form: {
-        name: "",
-        unit: null,
-      },
-      formVisible: false,
     };
   },
 
-  mounted() {
-    this.form = { name: this.ingredient.name, unit: this.ingredient.unit };
-  },
-
   computed: {
-    ...mapState({
-      units: (state) => state.units.units,
-    }),
-
     typeToIcon() {
       const type = ingredientType[this.ingredient.type] || {};
 
@@ -126,53 +76,21 @@ export default {
     handleCommand(command) {
       switch (command) {
         case EDIT_COMMAND:
-          this.edit();
+          this.$emit("edit", this.ingredient);
           break;
         case REMOVE_COMMAND:
-          this.remove();
+          this.$emit("remove", this.ingredient);
           break;
         default:
           console.error("Unknown command:", command);
       }
-    },
-
-    edit() {
-      this.formVisible = true;
-      this.$nextTick(() => {
-        this.$refs.nameInput.$refs.input.focus();
-      });
-    },
-
-    handleEditConfirm() {
-      this.$store
-        .dispatch("editIngredient", {
-          objectId: this.ingredient.objectId,
-          ingredient: this.form,
-        })
-        .then(() => this.$message({ type: "success", message: "Edit success" }))
-        .catch(() =>
-          this.$message({ type: "error", message: "Ohoh... A problem occured" })
-        )
-        .finally(() => (this.formVisible = false));
-    },
-
-    remove() {
-      this.$store
-        .dispatch("removeIngredient", this.ingredient)
-        .then(() =>
-          this.$message({ type: "success", message: "Removing successful" })
-        )
-        .catch(() =>
-          this.$message({ type: "error", message: "Ohoh... A problem occured" })
-        );
     },
   },
 };
 </script>
 
 <style>
-.ingredient,
-.ingredient__form {
+.ingredient {
   display: flex;
   align-items: center;
 }
@@ -198,13 +116,5 @@ export default {
 .ingredient__secondary-text {
   font-size: 14px;
   color: rgba(0, 0, 0, 0.5);
-}
-
-.ingredient__form .el-form-item {
-  margin: 0;
-}
-
-.ingredient__form > .ingredient__text .el-form-item {
-  width: 220px;
 }
 </style>

@@ -13,6 +13,8 @@
           v-for="ingredient in ingredients"
           :key="ingredient.objectId"
           :ingredient="ingredient"
+          @edit="onEdit"
+          @remove="onRemove"
         ></ingredient>
       </el-scrollbar>
 
@@ -22,8 +24,9 @@
         destroy-on-close
       >
         <ingredient-form
-          @cancel="dialogFormVisible = false"
-          @submit="addIngredient"
+          @cancel="onCancel"
+          @submit="onSubmit"
+          :ingredient="ingredientEdited"
         ></ingredient-form>
       </el-dialog>
     </div>
@@ -43,6 +46,7 @@ export default {
   data() {
     return {
       dialogFormVisible: false,
+      ingredientEdited: null,
     };
   },
 
@@ -53,6 +57,11 @@ export default {
   },
 
   methods: {
+    onSubmit(formIngredient) {
+      if (this.ingredientEdited) this.editIngredient(formIngredient);
+      else this.addIngredient(formIngredient);
+    },
+
     addIngredient(formIngredient) {
       this.$store
         .dispatch("addIngredient", formIngredient)
@@ -60,6 +69,42 @@ export default {
           this.$message({ type: "success", message: "Adding succesful" });
           this.dialogFormVisible = false;
         })
+        .catch(() =>
+          this.$message({ type: "error", message: "Ohoh... A problem occured" })
+        );
+    },
+
+    editIngredient(formIngredient) {
+      this.$store
+        .dispatch("editIngredient", {
+          objectId: this.ingredientEdited.objectId,
+          ingredient: formIngredient,
+        })
+        .then(() => {
+          this.$message({ type: "success", message: "Edit success" });
+          this.onCancel();
+        })
+        .catch(() =>
+          this.$message({ type: "error", message: "Ohoh... A problem occured" })
+        );
+    },
+
+    onCancel() {
+      this.dialogFormVisible = false;
+      this.ingredientEdited = null;
+    },
+
+    onEdit(ingredient) {
+      this.ingredientEdited = ingredient;
+      this.dialogFormVisible = true;
+    },
+
+    onRemove(ingredient) {
+      this.$store
+        .dispatch("removeIngredient", ingredient)
+        .then(() =>
+          this.$message({ type: "success", message: "Removing successful" })
+        )
         .catch(() =>
           this.$message({ type: "error", message: "Ohoh... A problem occured" })
         );
