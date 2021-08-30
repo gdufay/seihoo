@@ -1,6 +1,8 @@
 <template>
   <div class="ingredient">
-    <el-avatar class="ingredient__avatar" icon="el-icon-food"></el-avatar>
+    <el-tooltip :content="typeToText">
+      <el-avatar class="ingredient__avatar" :icon="typeToIcon"></el-avatar>
+    </el-tooltip>
 
     <template v-if="!formVisible">
       <div class="ingredient__text">
@@ -66,6 +68,7 @@
 <script>
 import { MoreFilled, Check } from "@element-plus/icons";
 import { mapState } from "vuex";
+import { ingredientType } from "../utils/utils";
 
 const EDIT_COMMAND = "edit";
 const REMOVE_COMMAND = "remove";
@@ -105,6 +108,18 @@ export default {
     ...mapState({
       units: (state) => state.units.units,
     }),
+
+    typeToIcon() {
+      const type = ingredientType[this.ingredient.type] || {};
+
+      return type.icon || "el-icon-food";
+    },
+
+    typeToText() {
+      const type = ingredientType[this.ingredient.type] || {};
+
+      return type.text || "Unknown ingredient type";
+    },
   },
 
   methods: {
@@ -163,6 +178,7 @@ export default {
 }
 
 .ingredient__avatar {
+  background-color: #409eff;
   margin-right: 1rem;
   flex: 0 0 auto;
 }
