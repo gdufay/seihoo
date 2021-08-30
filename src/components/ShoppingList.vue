@@ -3,7 +3,13 @@
     <div class="container">
       <div class="header">
         <h2 class="title">Shopping List</h2>
-        <el-button plain type="info" @click="download">DOWNLOAD</el-button>
+        <el-button
+          plain
+          type="info"
+          @click="download"
+          :disabled="!ingredients.size"
+          >DOWNLOAD</el-button
+        >
       </div>
 
       <el-scrollbar>
