@@ -25,7 +25,7 @@
               <el-checkbox @change="selectRecipe($event, recipe.objectId)">
                 {{ recipe.name }}
                 <el-tag type="primary" effect="dark" size="mini">
-                  {{ frequencyToString(recipe.frequency) }}
+                  {{ recipe.frequency }}
                 </el-tag>
               </el-checkbox>
             </template>
@@ -59,7 +59,6 @@
 <script>
 import { mapState } from "vuex";
 import IngredientItem from "./IngredientItem.vue";
-import { frequencyToString } from "../utils/utils";
 
 export default {
   name: "recipe-list",
@@ -80,10 +79,6 @@ export default {
   },
 
   methods: {
-    frequencyToString(frequency) {
-      return frequencyToString(frequency);
-    },
-
     edit(recipe) {
       this.$router.push("/edit/" + recipe.objectId);
     },
@@ -145,7 +140,8 @@ export default {
   color: var(--c-gray);
 }
 
-.recipe, .ingredient {
+.recipe,
+.ingredient {
   padding: 12px 24px;
 }
 

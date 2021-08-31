@@ -4,6 +4,17 @@
       <el-input v-model="name"></el-input>
     </el-form-item>
 
+    <el-form-item label="Frequency">
+      <el-select v-model="frequency" placeholder="Frequency">
+        <el-option
+          v-for="(_, key) in frequencies"
+          :key="key"
+          :label="key"
+          :value="key"
+        ></el-option>
+      </el-select>
+    </el-form-item>
+
     <el-form-item
       v-for="(ingredient, index) in ingredients"
       :key="index"
@@ -58,18 +69,27 @@
 <script>
 import { mapActions, mapMutations, mapState } from "vuex";
 import { mapFields, mapMultiRowFields } from "vuex-map-fields";
+import { frequencies } from "../utils/utils";
+
+// see ui: https://form.jotformpro.com/51302775889971?
 
 export default {
   name: "EditRecipe",
 
   props: ["id"],
 
+  data() {
+    return {
+      frequencies: frequencies,
+    };
+  },
+
   computed: {
     ...mapState({
       ingredientsList: (state) => state.ingredients.ingredients,
     }),
 
-    ...mapFields("editedRecipe", ["name"]),
+    ...mapFields("editedRecipe", ["name", "frequency"]),
 
     ...mapMultiRowFields("editedRecipe", ["ingredients"]),
   },
