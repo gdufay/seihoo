@@ -21,21 +21,22 @@ const actions = {
 			.then(() => commit("removeIngredient", ingredient))
 	},
 
-	async addIngredient({ commit }, ingredient) {
-		const { name, type, unit } = ingredient;
+	async addIngredient({ commit }, { name, type, unit }) {
 		const pointer = createPointer("Unit", unit.objectId);
+		const ingredient = { name, type, unit: pointer };
 
-		return new FetchWrapper(`https://parseapi.back4app.com/classes/Ingredient`, "POST", { name: name, unit: pointer, type: type })
+		return new FetchWrapper(`https://parseapi.back4app.com/classes/Ingredient`, "POST", ingredient)
 			.stringify()
 			.requireAuth()
 			.fetch()
 			.then(({ objectId }) => commit("addIngredient", { objectId: objectId, ...ingredient }));
 	},
 
-	async editIngredient({ commit }, { objectId, ingredient }) {
-		const pointer = createPointer("Unit", ingredient.unit.objectId);
+	async editIngredient({ commit }, { objectId, ingredient: { name, type, unit } }) {
+		const pointer = createPointer("Unit", unit.objectId);
+		const ingredient = { name, type, unit: pointer };
 
-		return new FetchWrapper(`https://parseapi.back4app.com/classes/Ingredient/${objectId}`, "PUT", { name: ingredient.name, unit: pointer })
+		return new FetchWrapper(`https://parseapi.back4app.com/classes/Ingredient/${objectId}`, "PUT", ingredient)
 			.stringify()
 			.requireAuth()
 			.fetch()
