@@ -12,6 +12,7 @@
         type="password"
         autocomplete="off"
         show-password
+        @keyup.enter="onSubmit('form')"
       ></el-input>
     </el-form-item>
 
