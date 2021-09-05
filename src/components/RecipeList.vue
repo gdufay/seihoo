@@ -93,17 +93,15 @@ export default {
     },
 
     remove() {
-      // TODO: change to handle multi recipes
-      /*
       this.$store
-        .dispatch("removeRecipe", recipe)
+        .dispatch("removeRecipe", this.selectedRecipes)
         .then(() =>
           this.$message({ type: "success", message: "Removing successful" })
         )
         .catch(() =>
           this.$message({ type: "error", message: "Ohoh... A problem occured" })
-        );
-        */
+        )
+        .finally(() => this.selectedRecipes.clear());
     },
 
     selectRecipe(value, objectId) {

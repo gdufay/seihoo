@@ -33,11 +33,14 @@ const actions = {
             .then(({ results }) => commit("setRecipes", results));
     },
 
-    async removeRecipe({ commit }, recipe) {
-        return new FetchWrapper(`https://parseapi.back4app.com/classes/Recipe/${recipe.objectId}`, "DELETE")
+    async removeRecipe({ commit }, recipes) {
+        const body = { objectIds: [...recipes].join() };
+
+        return new FetchWrapper(`https://parseapi.back4app.com/functions/removeRecipes`, "POST", body)
             .requireAuth()
+            .stringify()
             .fetch()
-            .then(() => commit("removeRecipe", recipe));
+            .then(({ result }) => commit("removeRecipe", result.map(({ objectId }) => objectId)));
     },
 
     async generateRandom({ state, commit }, value) {
@@ -81,11 +84,13 @@ const mutations = {
         }
     },
 
-    removeRecipe(state, recipe) {
-        const index = state.recipes.findIndex(item => item.objectId === recipe.objectId);
+    removeRecipe(state, recipes) {
+        for (const recipe of recipes) {
+            const index = state.recipes.findIndex(item => item.objectId === recipe);
 
-        if (index !== -1) {
-            state.recipes.splice(index, 1);
+            if (index !== -1) {
+                state.recipes.splice(index, 1);
+            }
         }
     }
 }
