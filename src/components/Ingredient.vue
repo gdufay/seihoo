@@ -1,7 +1,9 @@
 <template>
   <div class="ingredient">
     <el-tooltip :content="typeToText">
-      <el-avatar class="ingredient__avatar" :icon="typeToIcon"></el-avatar>
+      <el-avatar class="ingredient__avatar">
+        <component :is="typeToIcon"></component>
+      </el-avatar>
     </el-tooltip>
 
     <div class="ingredient__text">
@@ -99,6 +101,13 @@ export default {
   background-color: #409eff;
   margin-right: 1rem;
   flex: 0 0 auto;
+}
+
+.ingredient__avatar svg {
+  height: 32px;
+  width: 32px;
+  padding: 6px 4px;
+  fill: var(--el-avatar-font-color);
 }
 
 .ingredient__text {
