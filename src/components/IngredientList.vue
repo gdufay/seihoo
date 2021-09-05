@@ -8,7 +8,7 @@
         </el-button>
       </div>
 
-      <el-scrollbar>
+      <div class="content">
         <ingredient
           v-for="ingredient in ingredients"
           :key="ingredient.objectId"
@@ -16,7 +16,7 @@
           @edit="onEdit"
           @remove="onRemove"
         ></ingredient>
-      </el-scrollbar>
+      </div>
 
       <el-dialog
         title="Add ingredient"

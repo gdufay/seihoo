@@ -12,7 +12,7 @@
         >
       </div>
 
-      <el-scrollbar>
+      <div class="content">
         <ingredient-item
           v-for="[name, { quantity, unit }] in ingredients"
           :key="name"
@@ -21,7 +21,7 @@
           :unit="unit"
           class="ingredient"
         ></ingredient-item>
-      </el-scrollbar>
+      </div>
     </div>
   </section>
 </template>

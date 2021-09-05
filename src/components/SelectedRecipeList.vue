@@ -16,30 +16,28 @@
         </el-button>
       </div>
 
-      <el-scrollbar>
-        <el-collapse v-model="activeRecipes">
-          <el-collapse-item
-            v-for="recipe in recipes"
-            :key="recipe.objectId"
-            :name="recipe.name"
-            class="recipe"
-          >
-            <template #title>
-              <el-checkbox @change="selectRecipe($event, recipe.objectId)">
-                {{ recipe.name }}
-              </el-checkbox>
-            </template>
+      <el-collapse v-model="activeRecipes" class="content">
+        <el-collapse-item
+          v-for="recipe in recipes"
+          :key="recipe.objectId"
+          :name="recipe.name"
+          class="recipe"
+        >
+          <template #title>
+            <el-checkbox @change="selectRecipe($event, recipe.objectId)">
+              {{ recipe.name }}
+            </el-checkbox>
+          </template>
 
-            <ingredient-item
-              v-for="{ ingredient, quantity } in recipe.ingredients"
-              :key="ingredient.objectId"
-              :name="ingredient.name"
-              :quantity="quantity"
-              :unit="ingredient.unit.name"
-            ></ingredient-item>
-          </el-collapse-item>
-        </el-collapse>
-      </el-scrollbar>
+          <ingredient-item
+            v-for="{ ingredient, quantity } in recipe.ingredients"
+            :key="ingredient.objectId"
+            :name="ingredient.name"
+            :quantity="quantity"
+            :unit="ingredient.unit.name"
+          ></ingredient-item>
+        </el-collapse-item>
+      </el-collapse>
     </div>
   </section>
 </template>

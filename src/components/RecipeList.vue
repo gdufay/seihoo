@@ -13,45 +13,43 @@
         <el-button v-else plain type="info" @click="add">ADD RECIPE</el-button>
       </div>
 
-      <el-scrollbar>
-        <el-collapse v-model="activeRecipes">
-          <el-collapse-item
-            v-for="recipe in recipes"
-            :key="recipe.objectId"
-            :name="recipe.name"
-            class="recipe"
-          >
-            <template #title>
-              <el-checkbox @change="selectRecipe($event, recipe.objectId)">
-                {{ recipe.name }}
-                <el-tag type="primary" effect="dark" size="mini">
-                  {{ recipe.frequency }}
-                </el-tag>
-              </el-checkbox>
-            </template>
+      <el-collapse v-model="activeRecipes" class="content">
+        <el-collapse-item
+          v-for="recipe in recipes"
+          :key="recipe.objectId"
+          :name="recipe.name"
+          class="recipe"
+        >
+          <template #title>
+            <el-checkbox @change="selectRecipe($event, recipe.objectId)">
+              {{ recipe.name }}
+              <el-tag type="primary" effect="dark" size="mini">
+                {{ recipe.frequency }}
+              </el-tag>
+            </el-checkbox>
+          </template>
 
-            <ingredient-item
-              v-for="{ ingredient, quantity } in recipe.ingredients"
-              :key="ingredient.objectId"
-              :name="ingredient.name"
-              :quantity="quantity"
-              :unit="ingredient.unit.name"
-            ></ingredient-item>
+          <ingredient-item
+            v-for="{ ingredient, quantity } in recipe.ingredients"
+            :key="ingredient.objectId"
+            :name="ingredient.name"
+            :quantity="quantity"
+            :unit="ingredient.unit.name"
+          ></ingredient-item>
 
-            <div class="button-group__container">
-              <el-tooltip content="Edit">
-                <el-button
-                  type="primary"
-                  @click="edit(recipe)"
-                  size="mini"
-                  plain
-                  icon="el-icon-edit"
-                ></el-button>
-              </el-tooltip>
-            </div>
-          </el-collapse-item>
-        </el-collapse>
-      </el-scrollbar>
+          <div class="button-group__container">
+            <el-tooltip content="Edit">
+              <el-button
+                type="primary"
+                @click="edit(recipe)"
+                size="mini"
+                plain
+                icon="el-icon-edit"
+              ></el-button>
+            </el-tooltip>
+          </div>
+        </el-collapse-item>
+      </el-collapse>
     </div>
   </section>
 </template>
@@ -126,6 +124,8 @@ export default {
   background-color: #fff;
   overflow: hidden;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.08); /* var(--shadow-depth-3) */
+  display: flex;
+  flex-flow: column nowrap;
 }
 
 .header {
@@ -147,6 +147,11 @@ export default {
 
 .el-collapse {
   border: none;
+}
+
+.content {
+  overflow: scroll;
+  flex: 1;
 }
 
 .button-group__container {
