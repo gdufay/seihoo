@@ -1,5 +1,5 @@
 import FetchWrapper from "../../utils/FetchWrapper";
-import { getRandomInt } from "../../utils/utils";
+import { getRandomInt, createPointer } from "../../utils/utils";
 
 const state = () => ({
     recipes: [],
@@ -41,6 +41,20 @@ const actions = {
             .stringify()
             .fetch()
             .then(({ result }) => commit("removeRecipe", result.map(({ objectId }) => objectId)));
+    },
+
+    async updateRecipe(_, { objectId = "", name, ingredients, frequency }) {
+        const body = {
+            name,
+            ingredients: ingredients.map(({ ingredient, quantity }) => ({ quantity: quantity, ingredient: createPointer("Ingredient", ingredient.objectId) })),
+            frequency,
+        };
+
+        return new FetchWrapper(`https://parseapi.back4app.com/classes/Recipe/${objectId}`, objectId ? "PUT" : "POST", body)
+            .stringify()
+            .requireAuth()
+            .fetch();
+        // TODO: push to recipes
     },
 
     async generateRandom({ state, commit }, value) {

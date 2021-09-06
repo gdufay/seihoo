@@ -1,11 +1,17 @@
 <template>
-  <el-form class="edit-recipe" ref="recipeForm">
+  <el-form
+    class="edit-recipe"
+    ref="recipeForm"
+    :model="form"
+    label-position="left"
+    label-width="100px"
+  >
     <el-form-item label="Recipe name">
-      <el-input v-model="name"></el-input>
+      <el-input v-model="form.name"></el-input>
     </el-form-item>
 
     <el-form-item label="Frequency">
-      <el-select v-model="frequency" placeholder="Frequency">
+      <el-select v-model="form.frequency" placeholder="Frequency">
         <el-option
           v-for="(_, key) in frequencies"
           :key="key"
@@ -15,49 +21,49 @@
       </el-select>
     </el-form-item>
 
-    <el-form-item
-      v-for="(ingredient, index) in ingredients"
-      :key="index"
-      :label="'Ingredient ' + index"
-    >
-      <el-input
-        v-model.number="ingredient.quantity"
-        type="number"
-        placeholder="Quantity"
-        :min="0"
-      >
-        <template #prepend>
-          <el-select
-            v-model="ingredient.ingredient"
-            placeholder="Ingredient"
-            value-key="objectId"
-          >
-            <el-option
-              v-for="ingredientItem in ingredientsList"
-              :key="ingredientItem.objectId"
-              :label="ingredientItem.name"
-              :value="ingredientItem"
-            ></el-option>
-          </el-select>
-        </template>
-
-        <template #append v-if="ingredient.ingredient">
-          {{ ingredient.ingredient.unit.name }}
-        </template>
-      </el-input>
-
-      <el-tooltip content="Remove">
-        <el-button
-          @click.prevent="removeIngredient(index)"
-          icon="el-icon-delete"
-          type="danger"
+    <el-form-item label="Ingredient List">
+      <ul class="list">
+        <li
+          v-for="(
+            { quantity, ingredient: { name, unit } }, index
+          ) in form.ingredients"
+          :key="index"
+          class="list-item"
         >
-        </el-button>
-      </el-tooltip>
+          <ingredient-item
+            :name="name"
+            :quantity="quantity"
+            :unit="unit.name"
+          ></ingredient-item>
+
+          <el-button-group>
+            <el-tooltip content="Edit">
+              <el-button
+                @click.prevent="editIngredient(index)"
+                icon="el-icon-edit"
+                type="primary"
+              >
+              </el-button>
+            </el-tooltip>
+            <el-tooltip content="Remove">
+              <el-button
+                @click.prevent="removeIngredient(index)"
+                icon="el-icon-delete"
+                type="danger"
+              >
+              </el-button>
+            </el-tooltip>
+          </el-button-group>
+        </li>
+      </ul>
+
+      <ingredient-recipe-form
+        @save="onSave"
+        :ingredient="form.ingredients[edited]"
+      ></ingredient-recipe-form>
     </el-form-item>
 
     <el-form-item>
-      <el-button @click="addIngredient">Add Ingredient</el-button>
       <el-button @click="cancel">Cancel</el-button>
       <el-button type="primary" @click="onSubmit('recipeForm')">{{
         id ? "Update" : "Add"
@@ -67,31 +73,27 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapState } from "vuex";
-import { mapFields, mapMultiRowFields } from "vuex-map-fields";
+import IngredientItem from "../components/IngredientItem.vue";
+import IngredientRecipeForm from "../components/IngredientRecipeForm.vue";
 import { frequencies } from "../utils/utils";
-
-// see ui: https://form.jotformpro.com/51302775889971?
 
 export default {
   name: "EditRecipe",
 
   props: ["id"],
 
+  components: { IngredientItem, IngredientRecipeForm },
+
   data() {
     return {
       frequencies: frequencies,
+      edited: null,
+      form: {
+        ingredients: [],
+        name: "",
+        frequency: "",
+      },
     };
-  },
-
-  computed: {
-    ...mapState({
-      ingredientsList: (state) => state.ingredients.ingredients,
-    }),
-
-    ...mapFields("editedRecipe", ["name", "frequency"]),
-
-    ...mapMultiRowFields("editedRecipe", ["ingredients"]),
   },
 
   created() {
@@ -100,14 +102,12 @@ export default {
     }
   },
 
-  unmounted() {
-    this.cleanEditedRecipe();
-  },
-
   watch: {
     $route({ params }) {
+      this.edited = null;
+
       if (!params.id) {
-        this.cleanEditedRecipe();
+        this.form = { ingredients: [], name: "", frequency: "" };
         return;
       }
 
@@ -116,28 +116,31 @@ export default {
   },
 
   methods: {
-    ...mapMutations({
-      addIngredient: "editedRecipe/newIngredient",
-      removeIngredient: "editedRecipe/removeIngredient",
-    }),
-
-    ...mapActions({
-      setEditedRecipe: "editedRecipe/setEditedRecipe",
-      editRecipe: "editedRecipe/editRecipe",
-      createRecipe: "editedRecipe/createRecipe",
-      cleanEditedRecipe: "editedRecipe/cleanEditedRecipe",
-    }),
-
     onSubmit() {
-      // TODO: add/update editedRecipe to store.recipes (when getAll put in root component)
-      const ft = this.id ? this.editRecipe : this.createRecipe;
-
-      ft(); // TODO: check if succesful
+      this.$store.dispatch("updateRecipe", { objectId: this.id, ...this.form }); // TODO: check if succesful
       this.$router.back();
     },
 
     cancel() {
       this.$router.back();
+    },
+
+    onSave(ingredient) {
+      if (this.edited !== null) {
+        this.form.ingredients.splice(this.edited, 1, ingredient);
+        this.edited = null;
+      } else {
+        this.form.ingredients.push(ingredient);
+      }
+    },
+
+    editIngredient(index) {
+      this.edited = index;
+    },
+
+    removeIngredient(index) {
+      this.form.ingredients.splice(index, 1);
+      this.edited = null;
     },
 
     findAndSet(id) {
@@ -146,7 +149,9 @@ export default {
       );
 
       if (recipe) {
-        this.setEditedRecipe(recipe);
+        this.form.ingredients = [...recipe.ingredients];
+        this.form.name = recipe.name;
+        this.form.frequency = recipe.frequency;
       } else {
         this.$router.replace("/404");
       }
@@ -156,7 +161,18 @@ export default {
 </script>
 
 <style>
-.edit-recipe .el-select {
-  width: 100px;
+.list {
+  margin-bottom: 1rem;
+}
+
+.list-item {
+  width: 300px;
+  display: flex;
+  align-items: center;
+}
+
+.list-item > .ingredient-item {
+  flex: 1 0 auto;
+  margin-right: 0.5rem;
 }
 </style>
