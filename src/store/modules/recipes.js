@@ -1,5 +1,6 @@
 import FetchWrapper from "../../utils/FetchWrapper";
 import { getRandomInt, createPointer } from "../../utils/utils";
+import { Recipe } from "../../models";
 
 const state = () => ({
     recipes: [],
@@ -30,7 +31,21 @@ const actions = {
 
         return new FetchWrapper(`https://parseapi.back4app.com/classes/Recipe?${include}`)
             .fetch()
-            .then(({ results }) => commit("setRecipes", results));
+            .then(({ results }) => {
+                /*
+                const tmp = results.map(({ objectId, name, frequency, ingredients }) => {
+                    return {
+                        objectId,
+                        name,
+                        frequency,
+                        ingredients: ingredients.map(({ quantity, ingredient }) => ({ ...ingredient, unit_id: ingredient.unit.objectId, pivot: { quantity } }))
+                    };
+                });
+                Recipe.insert({ data: tmp });
+                console.log(Recipe.query().withAllRecursive().first());
+                */
+                commit("setRecipes", results);
+            });
     },
 
     async removeRecipe({ commit }, recipes) {
