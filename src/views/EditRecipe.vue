@@ -7,7 +7,7 @@
     label-width="100px"
   >
     <el-form-item label="Recipe name">
-      <el-input v-model="form.name"></el-input>
+      <el-input v-model="form.name" placeholder="Recipe Name"></el-input>
     </el-form-item>
 
     <el-form-item label="Frequency">
