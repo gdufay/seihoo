@@ -1,12 +1,11 @@
-import { createApp } from 'vue'
-import App from './App.vue'
-import installElementPlus from './plugins/element'
-import router from './router'
-import store from './store'
+import { createApp } from "vue"
+import App from "./App.vue"
+import ElementPlus from "element-plus"
+import router from "./router"
+import store from "./store"
 import { IconCandy, IconCereal, IconDairy, IconFish, IconLiquid, IconSeasoning, IconVegetable, IconFood, IconFruit, IconMeat } from "./components/icons";
 
-const app = createApp(App).use(store).use(router)
-installElementPlus(app)
+const app = createApp(App).use(store).use(router).use(ElementPlus)
 
 app.component("IconCandy", IconCandy);
 app.component("IconCereal", IconCereal);
@@ -19,4 +18,4 @@ app.component("IconMeat", IconMeat);
 app.component("IconSeasoning", IconSeasoning);
 app.component("IconVegetable", IconVegetable);
 
-app.mount('#app')
+app.mount("#app")
