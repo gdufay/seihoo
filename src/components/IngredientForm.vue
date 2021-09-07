@@ -36,8 +36,8 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
 import { ingredientType } from "../utils/utils";
+import { Unit } from "../models";
 
 export default {
   name: "ingredient-form",
@@ -61,14 +61,14 @@ export default {
     if (this.ingredient) {
       const { name, unit, type } = this.ingredient;
 
-      this.form = { name: name, unit: unit, type: type };
+      this.form = { name, unit, type };
     }
   },
 
   computed: {
-    ...mapState({
-      units: (state) => state.units.units,
-    }),
+    units() {
+      return Unit.all();
+    }
   },
 };
 </script>
