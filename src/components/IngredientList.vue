@@ -35,9 +35,9 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
 import Ingredient from "./Ingredient.vue";
 import IngredientForm from "./IngredientForm.vue";
+import { Ingredient as Ingredients } from "../models";
 
 export default {
   name: "ingredient-list",
@@ -47,15 +47,15 @@ export default {
   data() {
     return {
       dialogFormVisible: false,
-      ingredientEdited: null,
+      ingredientEdited: null, // only save objectId
       loading: false,
     };
   },
 
   computed: {
-    ...mapState({
-      ingredients: (state) => state.ingredients.ingredients,
-    }),
+    ingredients() {
+      return Ingredients.all();
+    },
   },
 
   methods: {
@@ -64,37 +64,45 @@ export default {
       else this.addIngredient(formIngredient);
     },
 
-    addIngredient(formIngredient) {
+    async addIngredient(formIngredient) {
       this.loading = true;
 
-      this.$store
-        .dispatch("addIngredient", formIngredient)
-        .then(() => {
-          this.$message({ type: "success", message: "Adding succesful" });
-          this.dialogFormVisible = false;
-        })
-        .catch(() =>
-          this.$message({ type: "error", message: "Ohoh... A problem occured" })
-        )
-        .finally(() => (this.loading = false));
+      try {
+        await Ingredients.add(formIngredient);
+        this.$message({ type: "success", message: "Adding succesful" });
+        this.dialogFormVisible = false;
+      } catch (e) {
+        this.$message({ type: "error", message: "Ohoh... A problem occured" });
+      }
+
+      this.loading = false;
     },
 
-    editIngredient(formIngredient) {
+    async editIngredient(formIngredient) {
       this.loading = true;
 
-      this.$store
-        .dispatch("editIngredient", {
-          objectId: this.ingredientEdited.objectId,
-          ingredient: formIngredient,
-        })
-        .then(() => {
-          this.$message({ type: "success", message: "Edit success" });
-          this.onCancel();
-        })
-        .catch(() =>
-          this.$message({ type: "error", message: "Ohoh... A problem occured" })
-        )
-        .finally(() => (this.loading = false));
+      try {
+        await Ingredients.edit(this.ingredientEdited.objectId, formIngredient);
+        this.$message({ type: "success", message: "Editing succesful" });
+        this.dialogFormVisible = false;
+      } catch (e) {
+        this.$message({ type: "error", message: "Ohoh... A problem occured" });
+      }
+
+      this.loading = false;
+    },
+
+    async onRemove(ingredient) {
+      this.loading = true;
+
+      try {
+        await Ingredients.destroy(ingredient.objectId);
+        this.$message({ type: "success", message: "Removing successful" });
+      } catch (e) {
+        this.$message({ type: "error", message: "Ohoh... A problem occured" });
+      }
+
+      this.loading = false;
     },
 
     onCancel() {
@@ -105,20 +113,6 @@ export default {
     onEdit(ingredient) {
       this.ingredientEdited = ingredient;
       this.dialogFormVisible = true;
-    },
-
-    onRemove(ingredient) {
-      this.loading = true;
-
-      this.$store
-        .dispatch("removeIngredient", ingredient)
-        .then(() =>
-          this.$message({ type: "success", message: "Removing successful" })
-        )
-        .catch(() =>
-          this.$message({ type: "error", message: "Ohoh... A problem occured" })
-        )
-        .finally(() => (this.loading = false));
     },
   },
 };

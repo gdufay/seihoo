@@ -11,7 +11,7 @@
         {{ ingredient.name }}
       </p>
       <p class="ingredient__secondary-text">
-        {{ ingredient.unit.name }}
+        {{ unit.name }}
       </p>
     </div>
 
@@ -33,6 +33,7 @@
 <script>
 import { MoreFilled } from "@element-plus/icons";
 import { ingredientType } from "../utils/utils";
+import { Unit } from '../models';
 
 const EDIT_COMMAND = "edit";
 const REMOVE_COMMAND = "remove";
@@ -61,6 +62,10 @@ export default {
   },
 
   computed: {
+    unit() {
+      return Unit.find(this.ingredient.unit_id) || {};
+    },
+
     typeToIcon() {
       const type = ingredientType[this.ingredient.type] || {};
 
@@ -78,7 +83,7 @@ export default {
     handleCommand(command) {
       switch (command) {
         case EDIT_COMMAND:
-          this.$emit("edit", this.ingredient);
+          this.$emit("edit", this.ingredient); // TODO: use objectId instead of all ingredient
           break;
         case REMOVE_COMMAND:
           this.$emit("remove", this.ingredient);

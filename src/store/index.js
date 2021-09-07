@@ -1,7 +1,6 @@
 import { createLogger, createStore } from 'vuex';
 import VuexORM from '@vuex-orm/core';
 import { Ingredient, Recipe, IngredientRecipe, Unit } from "../models";
-import ingredients from "./modules/ingredients";
 import recipes from './modules/recipes';
 import VuexOrmAxios from "@vuex-orm/plugin-axios";
 import axios from 'axios';
@@ -43,11 +42,14 @@ export default createStore({
 
     async getAllUnits() {
       return Unit.fetch();
-    }
+    },
+
+    async getAllIngredients() {
+      return Ingredient.fetch();
+    },
   },
 
   modules: {
-    ingredients,
     recipes,
   }
 })

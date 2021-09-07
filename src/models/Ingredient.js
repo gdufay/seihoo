@@ -1,5 +1,6 @@
 import { Model } from "@vuex-orm/core";
 import Unit from "./Unit";
+import { createPointer } from "../utils/utils";
 
 export default class Ingredient extends Model {
     static entity = "ingredient";
@@ -13,5 +14,55 @@ export default class Ingredient extends Model {
             unit_id: this.attr(null),
             unit: this.belongsTo(Unit, "unit_id"),
         }
+    }
+
+    static fetch() {
+        return this.api().get("/classes/Ingredient", {
+            dataTransformer: (res) => {
+                return res.data.results.map(({ objectId, name, type, unit }) =>
+                    ({ objectId, name, type, unit_id: unit.objectId })
+                );
+            }
+        });
+    }
+
+    static destroy(objectId) {
+        return this.api().delete(`/classes/Ingredient/${objectId}`, {
+            delete: objectId,
+            headers: {
+                "X-Parse-Session-Token": window.localStorage.getItem("sessionToken"),
+                ...this.globalApiConfig.headers
+            }
+        })
+    }
+
+    static add({ name, type, unit }) {
+        const pointer = createPointer("Unit", unit.objectId);
+        const ingredient = { name, type, unit: pointer };
+
+        return this.api().post(`/classes/Ingredient`, ingredient, {
+            headers: {
+                "X-Parse-Session-Token": window.localStorage.getItem("sessionToken"),
+                ...this.globalApiConfig.headers
+            },
+            dataTransformer: ({ data: { objectId } }) => {
+                return { objectId, name, type, unit, unit_id: unit.objectId }
+            }
+        })
+    }
+
+    static edit(objectId, { name, type, unit }) {
+        const pointer = createPointer("Unit", unit.objectId);
+        const ingredient = { name, type, unit: pointer };
+
+        return this.api().put(`/classes/Ingredient/${objectId}`, ingredient, {
+            headers: {
+                "X-Parse-Session-Token": window.localStorage.getItem("sessionToken"),
+                ...this.globalApiConfig.headers
+            },
+            dataTransformer: (_) => {
+                return { objectId, name, type, unit, unit_id: unit.objectId }
+            }
+        })
     }
 }

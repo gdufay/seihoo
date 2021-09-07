@@ -8,10 +8,10 @@
         class="input"
       >
         <el-option
-          v-for="item in ingredientsList"
-          :key="item.objectId"
-          :label="item.name"
-          :value="item"
+          v-for="ingredient in ingredients"
+          :key="ingredient.objectId"
+          :label="ingredient.name"
+          :value="ingredient"
         ></el-option>
       </el-select>
 
@@ -33,7 +33,8 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { Ingredient } from "../models";
+
 export default {
   name: "ingredient-recipe-form",
 
@@ -51,9 +52,9 @@ export default {
   },
 
   computed: {
-    ...mapState({
-      ingredientsList: (state) => state.ingredients.ingredients,
-    }),
+    ingredients() {
+      return Ingredient.query().with("unit").get();
+    },
   },
 
   methods: {
