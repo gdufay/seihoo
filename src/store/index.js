@@ -3,7 +3,6 @@ import VuexORM from '@vuex-orm/core';
 import { Ingredient, Recipe, IngredientRecipe, Unit } from "../models";
 import ingredients from "./modules/ingredients";
 import recipes from './modules/recipes';
-import FetchWrapper from '../utils/FetchWrapper';
 import VuexOrmAxios from "@vuex-orm/plugin-axios";
 import axios from 'axios';
 
@@ -43,9 +42,7 @@ export default createStore({
     },
 
     async getAllUnits() {
-      return new FetchWrapper("https://parseapi.back4app.com/classes/Unit")
-        .fetch()
-        .then(({ results }) => Unit.insert({ data: results }));
+      return Unit.fetch();
     }
   },
 

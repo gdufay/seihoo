@@ -10,4 +10,10 @@ export default class Unit extends Model {
             name: this.string(null).nullable(),
         }
     }
+
+    static fetch() {
+        return this.api().get("/classes/Unit", {
+            dataKey: "results"
+        });
+    }
 }
