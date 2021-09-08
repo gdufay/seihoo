@@ -26,50 +26,8 @@ const getters = {
 }
 
 const actions = {
-    async getAllRecipes({ commit }) {
-        const include = "include=ingredients.ingredient,ingredients.ingredient.unit"
-
-        return new FetchWrapper(`https://parseapi.back4app.com/classes/Recipe?${include}`)
-            .fetch()
-            .then(({ results }) => {
-                /*
-                const tmp = results.map(({ objectId, name, frequency, ingredients }) => {
-                    return {
-                        objectId,
-                        name,
-                        frequency,
-                        ingredients: ingredients.map(({ quantity, ingredient }) => ({ ...ingredient, unit_id: ingredient.unit.objectId, pivot: { quantity } }))
-                    };
-                });
-                Recipe.insert({ data: tmp });
-                console.log(Recipe.query().withAllRecursive().first());
-                */
-                commit("setRecipes", results);
-            });
-    },
-
-    async removeRecipe({ commit }, recipes) {
-        const body = { objectIds: [...recipes].join() };
-
-        return new FetchWrapper(`https://parseapi.back4app.com/functions/removeRecipes`, "POST", body)
-            .requireAuth()
-            .stringify()
-            .fetch()
-            .then(({ result }) => commit("removeRecipe", result.map(({ objectId }) => objectId)));
-    },
-
-    async updateRecipe(_, { objectId = "", name, ingredients, frequency }) {
-        const body = {
-            name,
-            ingredients: ingredients.map(({ ingredient, quantity }) => ({ quantity: quantity, ingredient: createPointer("Ingredient", ingredient.objectId) })),
-            frequency,
-        };
-
-        return new FetchWrapper(`https://parseapi.back4app.com/classes/Recipe/${objectId}`, objectId ? "PUT" : "POST", body)
-            .stringify()
-            .requireAuth()
-            .fetch();
-        // TODO: push to recipes
+    async getAllRecipes() {
+        return Recipe.fetch();
     },
 
     async generateRandom({ state, commit }, value) {

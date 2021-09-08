@@ -25,7 +25,7 @@
       <ul class="list">
         <li
           v-for="(
-            { quantity, ingredient: { name, unit } }, index
+            { ingredient: { name, unit }, quantity }, index
           ) in form.ingredients"
           :key="index"
           class="list-item"
@@ -59,12 +59,13 @@
 
       <ingredient-recipe-form
         @save="onSave"
-        :ingredient="form.ingredients[edited]"
+        :ingredient="editedIngredient"
+        :quantity="editedQuantity"
       ></ingredient-recipe-form>
     </el-form-item>
 
     <el-form-item>
-      <el-button @click="cancel">Cancel</el-button>
+      <el-button @click="onCancel">Cancel</el-button>
       <el-button type="primary" @click="onSubmit('recipeForm')">{{
         id ? "Update" : "Add"
       }}</el-button>
@@ -75,6 +76,7 @@
 <script>
 import IngredientItem from "../components/IngredientItem.vue";
 import IngredientRecipeForm from "../components/IngredientRecipeForm.vue";
+import { Recipe } from "../models";
 import { frequencies } from "../utils/utils";
 
 export default {
@@ -85,15 +87,7 @@ export default {
   components: { IngredientItem, IngredientRecipeForm },
 
   data() {
-    return {
-      frequencies: frequencies,
-      edited: null,
-      form: {
-        ingredients: [],
-        name: "",
-        frequency: "",
-      },
-    };
+    return this.initialState();
   },
 
   created() {
@@ -102,12 +96,21 @@ export default {
     }
   },
 
+  computed: {
+    editedQuantity() {
+      return this.edited !== null ? this.form.ingredients[this.edited].quantity : null;
+    },
+
+    editedIngredient() {
+      return this.edited !== null ? this.form.ingredients[this.edited].ingredient : null;
+    },
+  },
+
   watch: {
     $route({ params }) {
-      this.edited = null;
+      this.resetState();
 
       if (!params.id) {
-        this.form = { ingredients: [], name: "", frequency: "" };
         return;
       }
 
@@ -116,12 +119,34 @@ export default {
   },
 
   methods: {
+    initialState() {
+      return {
+        frequencies: frequencies,
+        edited: null,
+        form: {
+          ingredients: [],
+          name: "",
+          frequency: "",
+        },
+      };
+    },
+
+    resetState() {
+      Object.assign(this.$data, this.initialState());
+    },
+
     onSubmit() {
-      this.$store.dispatch("updateRecipe", { objectId: this.id, ...this.form }); // TODO: check if succesful
+      // TODO: check if succesful
+      if (this.id) {
+        Recipe.edit(this.id, this.form);
+      } else {
+        Recipe.add(this.form);
+      }
+
       this.$router.back();
     },
 
-    cancel() {
+    onCancel() {
       this.$router.back();
     },
 
@@ -144,14 +169,17 @@ export default {
     },
 
     findAndSet(id) {
-      const recipe = this.$store.state.recipes.recipes.find(
-        (recipe) => recipe.objectId === id
-      );
+      const recipe = Recipe.query().whereId(id).withAllRecursive().first();
 
       if (recipe) {
-        this.form.ingredients = [...recipe.ingredients];
-        this.form.name = recipe.name;
-        this.form.frequency = recipe.frequency;
+        this.form = {
+          ingredients: recipe.ingredients.map((ingredient) => ({
+            quantity: ingredient.pivot.quantity,
+            ingredient: ingredient,
+          })),
+          name: recipe.name,
+          frequency: recipe.frequency,
+        };
       } else {
         this.$router.replace("/404");
       }

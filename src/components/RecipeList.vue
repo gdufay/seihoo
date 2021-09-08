@@ -6,11 +6,13 @@
 
         <template v-if="selectedRecipes.size">
           <el-button-group>
-            <el-button plain type="info" @click="select">SELECT</el-button>
-            <el-button plain type="info" @click="remove">REMOVE</el-button>
+            <el-button plain type="info" @click="onSelect">SELECT</el-button>
+            <el-button plain type="info" @click="onRemove">REMOVE</el-button>
           </el-button-group>
         </template>
-        <el-button v-else plain type="info" @click="add">ADD RECIPE</el-button>
+        <el-button v-else plain type="info" @click="onAdd"
+          >ADD RECIPE</el-button
+        >
       </div>
 
       <el-collapse v-model="activeRecipes" class="content">
@@ -21,7 +23,7 @@
           class="recipe"
         >
           <template #title>
-            <el-checkbox @change="selectRecipe($event, recipe.objectId)">
+            <el-checkbox @change="onSelectRecipe($event, recipe.objectId)">
               {{ recipe.name }}
               <el-tag type="primary" effect="dark" size="mini">
                 {{ recipe.frequency }}
@@ -30,10 +32,10 @@
           </template>
 
           <ingredient-item
-            v-for="{ ingredient, quantity } in recipe.ingredients"
+            v-for="ingredient in recipe.ingredients"
             :key="ingredient.objectId"
             :name="ingredient.name"
-            :quantity="quantity"
+            :quantity="ingredient.pivot.quantity"
             :unit="ingredient.unit.name"
           ></ingredient-item>
 
@@ -41,7 +43,7 @@
             <el-tooltip content="Edit">
               <el-button
                 type="primary"
-                @click="edit(recipe)"
+                @click="onEdit(recipe)"
                 size="mini"
                 plain
                 icon="el-icon-edit"
@@ -55,7 +57,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { Recipe } from "../models";
 import IngredientItem from "./IngredientItem.vue";
 
 export default {
@@ -71,40 +73,42 @@ export default {
   },
 
   computed: {
-    ...mapState({
-      recipes: (state) => state.recipes.recipes,
-    }),
+    recipes() {
+      return Recipe.query().withAllRecursive().get();
+    },
   },
 
   methods: {
-    edit(recipe) {
+    onEdit(recipe) {
       this.$router.push("/edit/" + recipe.objectId);
     },
 
-    select() {
+    onSelect() {
       this.selectedRecipes.forEach((recipe) => {
         this.$store.commit("selectRecipe", recipe);
         this.selectedRecipes.delete(recipe);
       });
     },
 
-    add() {
+    onAdd() {
       this.$router.push("/new");
     },
 
-    remove() {
-      this.$store
-        .dispatch("removeRecipe", this.selectedRecipes)
-        .then(() =>
-          this.$message({ type: "success", message: "Removing successful" })
-        )
-        .catch(() =>
-          this.$message({ type: "error", message: "Ohoh... A problem occured" })
-        )
-        .finally(() => this.selectedRecipes.clear());
+    async onRemove() {
+      try {
+        await Promise.all(
+          [...this.selectedRecipes].map((objectId) => Recipe.destroy(objectId))
+        );
+        this.$message({ type: "success", message: "Removing successful" });
+      } catch (e) {
+        console.error(e);
+        this.$message({ type: "error", message: "Ohoh... A problem occured" });
+      }
+
+      this.selectedRecipes.clear();
     },
 
-    selectRecipe(value, objectId) {
+    onSelectRecipe(value, objectId) {
       if (value) {
         this.selectedRecipes.add(objectId);
       } else {

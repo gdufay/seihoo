@@ -41,7 +41,7 @@ import { Ingredient } from "../models";
 export default {
   name: "ingredient-recipe-form",
 
-  props: ["ingredient"],
+  props: ["ingredient", "quantity"],
 
   emits: ["save"],
 
@@ -68,8 +68,12 @@ export default {
   },
 
   watch: {
-    ingredient(newIngredient) {
-      this.form = { ...newIngredient };
+    ingredient(ingredient) {
+      this.form.ingredient = ingredient;
+    },
+
+    quantity(quantity) {
+      this.form.quantity = quantity;
     },
   },
 };
