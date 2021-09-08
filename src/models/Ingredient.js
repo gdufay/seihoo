@@ -17,10 +17,10 @@ export default class Ingredient extends Model {
     }
 
     static fetch() {
-        return this.api().get("/classes/Ingredient", {
+        return this.api().get("/classes/Ingredient?include=unit", {
             dataTransformer: (res) => {
-                return res.data.results.map(({ objectId, name, type, unit }) =>
-                    ({ objectId, name, type, unit_id: unit.objectId })
+                return res.data.results.map((ingredient) =>
+                    ({ ...ingredient, unit_id: ingredient.unit.objectId, })
                 );
             }
         });
