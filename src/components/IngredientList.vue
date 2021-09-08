@@ -6,9 +6,15 @@
         <el-button plain type="info" @click="dialogFormVisible = true">
           ADD INGREDIENT
         </el-button>
+        <el-input
+          class="search"
+          placeholder="Search"
+          prefix-icon="el-icon-search"
+          v-model="searchQuery"
+        ></el-input>
       </div>
 
-      <div class="content">
+      <div class="content" v-infinite-scroll="load">
         <ingredient
           v-for="ingredient in ingredients"
           :key="ingredient.objectId"
@@ -49,12 +55,20 @@ export default {
       dialogFormVisible: false,
       ingredientEdited: null, // only save objectId
       loading: false,
+      searchQuery: "",
+      limit: 20,
     };
   },
 
   computed: {
     ingredients() {
-      return Ingredients.all();
+      return Ingredients.query()
+        .where("name", (value) =>
+          value.toLowerCase().includes(this.searchQuery)
+        )
+        .limit(this.limit)
+        .orderBy("name")
+        .get();
     },
   },
 
@@ -113,6 +127,10 @@ export default {
     onEdit(ingredient) {
       this.ingredientEdited = ingredient;
       this.dialogFormVisible = true;
+    },
+
+    load() {
+      this.limit += 20;
     },
   },
 };

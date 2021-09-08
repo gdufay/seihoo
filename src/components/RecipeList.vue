@@ -128,7 +128,9 @@ export default {
 
 .header {
   display: flex;
+  flex-flow: row wrap;
   justify-content: space-between;
+  align-items: center;
   padding: 16px 24px;
 }
 
