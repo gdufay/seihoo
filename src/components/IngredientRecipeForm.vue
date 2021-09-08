@@ -20,6 +20,7 @@
         type="number"
         placeholder="Quantity"
         :min="0"
+        step="0.25"
         class="input"
       >
         <template #append v-if="form.ingredient">
