@@ -2,6 +2,8 @@
   <div class="ingredient-recipe-form">
     <div class="input-container">
       <el-select
+        filterable
+        default-first-option
         v-model="form.ingredient"
         placeholder="Ingredient"
         value-key="objectId"
