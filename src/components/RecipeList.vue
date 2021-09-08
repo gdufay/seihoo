@@ -13,6 +13,12 @@
         <el-button v-else plain type="info" @click="onAdd"
           >ADD RECIPE</el-button
         >
+        <el-input
+          class="search"
+          placeholder="search"
+          prefix-icon="el-icon-search"
+          v-model="search"
+        ></el-input>
       </div>
 
       <el-collapse v-model="activeRecipes" class="content">
@@ -69,12 +75,17 @@ export default {
     return {
       activeRecipes: [],
       selectedRecipes: new Set(),
+      search: "",
     };
   },
 
   computed: {
     recipes() {
-      return Recipe.query().withAllRecursive().get();
+      return Recipe.query()
+        .where("name", (value = "") => value.toLowerCase().includes(this.search))
+        .withAllRecursive()
+        .orderBy("name")
+        .get();
     },
   },
 
