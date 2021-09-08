@@ -22,7 +22,7 @@
         type="number"
         placeholder="Quantity"
         :min="0"
-        step="0.25"
+        step="1"
         class="input"
       >
         <template #append v-if="form.ingredient">
@@ -56,7 +56,7 @@ export default {
 
   computed: {
     ingredients() {
-      return Ingredient.query().with("unit").get();
+      return Ingredient.query().with("unit").orderBy("name").get();
     },
   },
 
