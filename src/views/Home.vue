@@ -1,7 +1,7 @@
 <template>
-  <recipe-list class="column-card"></recipe-list>
-
   <ingredient-list class="column-card"></ingredient-list>
+
+  <recipe-list class="column-card"></recipe-list>
 
   <selected-recipe-list class="column-card"></selected-recipe-list>
 
