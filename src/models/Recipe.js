@@ -44,8 +44,9 @@ export default class Recipe extends Model {
     }
 
     static add({ name, frequency, ingredients }) {
+        const nameLowered = name.toLowerCase();
         const recipe = {
-            name,
+            name: nameLowered,
             frequency,
             ingredients: ingredients.map(({ ingredient, quantity }) => ({ quantity, ingredient: createPointer("Ingredient", ingredient.objectId) })),
         }
@@ -56,14 +57,15 @@ export default class Recipe extends Model {
                 ...this.globalApiConfig.headers
             },
             dataTransformer: ({ data: { objectId } }) => {
-                return { objectId, name, frequency, ingredients: ingredientsToModel(ingredients) }
+                return { objectId, name: nameLowered, frequency, ingredients: ingredientsToModel(ingredients) }
             }
         })
     }
 
     static edit(objectId, { name, frequency, ingredients }) {
+        const nameLowered = name.toLowerCase();
         const recipe = {
-            name,
+            name: nameLowered,
             frequency,
             ingredients: ingredients.map(({ ingredient, quantity }) => ({ quantity, ingredient: createPointer("Ingredient", ingredient.objectId) })),
         }
@@ -74,7 +76,7 @@ export default class Recipe extends Model {
                 ...this.globalApiConfig.headers
             },
             dataTransformer: (_) => {
-                return { objectId, name, frequency, ingredients: ingredientsToModel(ingredients) }
+                return { objectId, name: nameLowered, frequency, ingredients: ingredientsToModel(ingredients) }
             }
         })
     }

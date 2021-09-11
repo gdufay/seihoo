@@ -82,10 +82,7 @@ export default {
   computed: {
     recipes() {
       return Recipe.query()
-        .where(
-          ({ selected, name }) =>
-            !selected && name.toLowerCase().includes(this.search)
-        ) // TODO: lowercase before
+        .where(({ selected, name }) => !selected && name.includes(this.search))
         .withAllRecursive()
         .orderBy("name")
         .get();

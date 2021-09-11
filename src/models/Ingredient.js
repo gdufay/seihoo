@@ -37,8 +37,9 @@ export default class Ingredient extends Model {
     }
 
     static add({ name, type, unit }) {
+        const nameLowered = name.toLowerCase();
         const pointer = createPointer("Unit", unit.objectId);
-        const ingredient = { name, type, unit: pointer };
+        const ingredient = { name: nameLowered, type, unit: pointer };
 
         return this.api().post(`/classes/Ingredient`, ingredient, {
             headers: {
@@ -46,14 +47,15 @@ export default class Ingredient extends Model {
                 ...this.globalApiConfig.headers
             },
             dataTransformer: ({ data: { objectId } }) => {
-                return { objectId, name, type, unit, unit_id: unit.objectId }
+                return { objectId, name: nameLowered, type, unit, unit_id: unit.objectId }
             }
         })
     }
 
     static edit(objectId, { name, type, unit }) {
+        const nameLowered = name.toLowerCase();
         const pointer = createPointer("Unit", unit.objectId);
-        const ingredient = { name, type, unit: pointer };
+        const ingredient = { name: nameLowered, type, unit: pointer };
 
         return this.api().put(`/classes/Ingredient/${objectId}`, ingredient, {
             headers: {
@@ -61,7 +63,7 @@ export default class Ingredient extends Model {
                 ...this.globalApiConfig.headers
             },
             dataTransformer: (_) => {
-                return { objectId, name, type, unit, unit_id: unit.objectId }
+                return { objectId, name: nameLowered, type, unit, unit_id: unit.objectId }
             }
         })
     }

@@ -63,9 +63,7 @@ export default {
   computed: {
     ingredients() {
       return Ingredients.query()
-        .where("name", (value = "") =>
-          value.toLowerCase().includes(this.searchQuery)
-        )
+        .where("name", (value = "") => value.includes(this.searchQuery))
         .limit(this.limit)
         .orderBy("name")
         .get();
