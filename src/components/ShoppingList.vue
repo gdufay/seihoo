@@ -7,14 +7,14 @@
           plain
           type="info"
           @click="download"
-          :disabled="!ingredients.size"
+          :disabled="!ingredients.length"
           >DOWNLOAD</el-button
         >
       </div>
 
       <div class="content">
         <ingredient-item
-          v-for="[name, { quantity, unit }] in ingredients"
+          v-for="{ name, quantity, unit } in ingredients"
           :key="name"
           :name="name"
           :quantity="quantity"
@@ -30,6 +30,7 @@
 import IngredientItem from "./IngredientItem.vue";
 import { generateShoppingList } from "@/utils/pdf";
 import { Recipe } from "../models";
+import { recipesToShoppingMap } from "../utils/utils";
 
 export default {
   name: "shopping-list",
@@ -38,7 +39,7 @@ export default {
 
   data() {
     return {
-      ingredients: new Map(),
+      ingredients: [],
     };
   },
 
@@ -50,18 +51,12 @@ export default {
 
   watch: {
     recipes(newRecipes) {
-      this.ingredients.clear();
+      const map = recipesToShoppingMap(newRecipes);
 
-      for (const { ingredients } of newRecipes) {
-        for (const { name, unit, pivot: { quantity } } of ingredients) {
-          const { quantity: oldQuantity = 0 } = this.ingredients.get(name) || {};
-
-          this.ingredients.set(name, {
-            unit: unit.name,
-            quantity: oldQuantity + quantity,
-          });
-        }
-      }
+      this.ingredients = Array.from(map, ([name, value]) => ({
+        name,
+        ...value,
+      })).sort((a, b) => (a.type < b.type ? -1 : 1));
     },
   },
 

@@ -6,6 +6,29 @@ export const getRandomInt = (min, max) => {
 
 export const createPointer = (className, objectId) => ({ __type: "Pointer", className: className, objectId: objectId })
 
+export const recipesToShoppingMap = (recipes) => {
+    const map = new Map();
+
+    for (const { ingredients } of recipes) {
+        for (const {
+            type,
+            name,
+            unit,
+            pivot: { quantity },
+        } of ingredients) {
+            const { quantity: oldQuantity = 0 } = map.get(name) || {};
+
+            map.set(name, {
+                unit: unit.name,
+                quantity: oldQuantity + quantity,
+                type,
+            });
+        }
+    }
+
+    return map;
+}
+
 export const frequencies = {
     never: 0,
     sometimes: 1,

@@ -26,21 +26,21 @@ const oneLineHeight = (fontSize) => fontSize * lineHeight / ptsPerCm;
 
 const { CheckBox } = jsPDF.AcroForm;
 
-const ingredientMapToString = (map) => {
+const ingredientMapToString = (ingredients) => {
     let ret = "";
 
-    map.forEach(({ quantity, unit }, name) => {
+    ingredients.forEach(({ name, quantity, unit }) => {
         ret += `${name.toLowerCase()}    ${quantity} ${unit}\n`;
     })
     return ret;
 }
 
-export const generateShoppingList = (ingredientMap) => {
+export const generateShoppingList = (ingredients) => {
     const doc = new jsPDF({ unit: "cm", format: "a6", lineHeight: lineHeight })
         .setProperties({ title: "Shopping List" });
     const textLines = doc.setFont("helvetica")
         .setFontSize(listFontSize)
-        .splitTextToSize(ingredientMapToString(ingredientMap), maxLineWidth);
+        .splitTextToSize(ingredientMapToString(ingredients), maxLineWidth);
     let y = margin + oneLineHeight(titleFontSize) * 2;
 
     textLines.pop(); // remove last \n
