@@ -27,9 +27,9 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
 import IngredientItem from "./IngredientItem.vue";
 import { generateShoppingList } from "@/utils/pdf";
+import { Recipe } from "../models";
 
 export default {
   name: "shopping-list",
@@ -37,13 +37,32 @@ export default {
   components: { IngredientItem },
 
   data() {
-    return {};
+    return {
+      ingredients: new Map(),
+    };
   },
 
   computed: {
-    ...mapGetters({
-      ingredients: "shoppingListFromSelected",
-    }),
+    recipes() {
+      return Recipe.query().where("selected", true).withAllRecursive().get();
+    },
+  },
+
+  watch: {
+    recipes(newRecipes) {
+      this.ingredients.clear();
+
+      for (const { ingredients } of newRecipes) {
+        for (const { name, unit, pivot: { quantity } } of ingredients) {
+          const { quantity: oldQuantity = 0 } = this.ingredients.get(name) || {};
+
+          this.ingredients.set(name, {
+            unit: unit.name,
+            quantity: oldQuantity + quantity,
+          });
+        }
+      }
+    },
   },
 
   methods: {
