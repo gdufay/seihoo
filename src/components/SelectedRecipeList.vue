@@ -32,7 +32,7 @@
           class="recipe"
         >
           <template #title>
-            <el-checkbox @change="selectRecipe($event, recipe.objectId)">
+            <el-checkbox @change="selectRecipe($event, recipe.objectId)" class="capitalize">
               {{ recipe.name }}
             </el-checkbox>
           </template>

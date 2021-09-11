@@ -29,7 +29,7 @@
           class="recipe"
         >
           <template #title>
-            <el-checkbox @change="onSelectRecipe($event, recipe.objectId)">
+            <el-checkbox @change="onSelectRecipe($event, recipe.objectId)" class="capitalize">
               {{ recipe.name }}
               <el-tag type="primary" effect="dark" size="mini">
                 {{ recipe.frequency }}
@@ -172,5 +172,13 @@ export default {
 .button-group__container {
   text-align: end;
   margin-top: 0.5rem;
+}
+
+.capitalize {
+  text-transform: capitalize;
+}
+
+.el-collapse-item__header label {
+  overflow: hidden;
 }
 </style>

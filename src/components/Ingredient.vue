@@ -7,7 +7,7 @@
     </el-tooltip>
 
     <div class="ingredient__text">
-      <p class="ingredient__primary-text">
+      <p class="ingredient__primary-text capitalize">
         {{ ingredient.name }}
       </p>
       <p class="ingredient__secondary-text">
@@ -124,7 +124,6 @@ export default {
 .ingredient__primary-text {
   font-size: 16px;
   color: black;
-  text-transform: capitalize;
 }
 
 .ingredient__secondary-text {

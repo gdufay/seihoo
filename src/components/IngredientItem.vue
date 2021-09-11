@@ -1,6 +1,6 @@
 <template>
   <div class="ingredient-item">
-    <span class="ingredient-name">{{ name }}</span>
+    <span class="ingredient-name capitalize">{{ name }}</span>
     <span class="ingredient-measurement">{{ quantity }} {{ unit }}</span>
   </div>
 </template>
