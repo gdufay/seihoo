@@ -16,7 +16,14 @@ export default defineConfig({
     ]
   },
   build: {
-    chunkSizeWarningLimit: 600,
-    cssCodeSplit: false
+    chunkSizeWarningLimit: 700,
+    cssCodeSplit: false,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          "element-plus": ['element-plus']
+        }
+      }
+    }
   }
 });
