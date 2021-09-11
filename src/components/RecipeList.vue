@@ -82,7 +82,10 @@ export default {
   computed: {
     recipes() {
       return Recipe.query()
-        .where("name", (value = "") => value.toLowerCase().includes(this.search))
+        .where(
+          ({ selected, name }) =>
+            !selected && name.toLowerCase().includes(this.search)
+        ) // TODO: lowercase before
         .withAllRecursive()
         .orderBy("name")
         .get();
@@ -95,9 +98,9 @@ export default {
     },
 
     onSelect() {
-      this.selectedRecipes.forEach((recipe) => {
-        this.$store.commit("selectRecipe", recipe);
-        this.selectedRecipes.delete(recipe);
+      this.selectedRecipes.forEach((objectId) => {
+        Recipe.update({ where: objectId, data: { selected: true } });
+        this.selectedRecipes.delete(objectId);
       });
     },
 

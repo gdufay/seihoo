@@ -17,6 +17,7 @@ export default class Recipe extends Model {
             name: this.string(null).nullable(),
             frequency: this.string("never"),
             ingredients: this.belongsToMany(Ingredient, IngredientRecipe, "recipe_id", "ingredient_id"),
+            selected: this.boolean(false),
         }
     }
 

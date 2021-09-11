@@ -3,6 +3,7 @@
     <div class="container">
       <div class="header">
         <h2 class="title">Selected Recipes</h2>
+
         <el-button
           v-if="selectedRecipes.size"
           plain
@@ -14,6 +15,13 @@
         <el-button v-else plain type="info" @click="generateRandom">
           GENERATE
         </el-button>
+
+        <el-input
+          class="search"
+          placeholder="search"
+          prefix-icon="el-icon-search"
+          v-model="search"
+        ></el-input>
       </div>
 
       <el-collapse v-model="activeRecipes" class="content">
@@ -30,10 +38,10 @@
           </template>
 
           <ingredient-item
-            v-for="{ ingredient, quantity } in recipe.ingredients"
+            v-for="ingredient in recipe.ingredients"
             :key="ingredient.objectId"
             :name="ingredient.name"
-            :quantity="quantity"
+            :quantity="ingredient.pivot.quantity"
             :unit="ingredient.unit.name"
           ></ingredient-item>
         </el-collapse-item>
@@ -43,7 +51,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { Recipe } from "../models";
 import IngredientItem from "./IngredientItem.vue";
 
 export default {
@@ -55,13 +63,21 @@ export default {
     return {
       activeRecipes: [],
       selectedRecipes: new Set(),
+      search: "",
     };
   },
 
   computed: {
-    ...mapState({
-      recipes: (state) => state.recipes.selectedRecipes,
-    }),
+    recipes() {
+      return Recipe.query()
+        .where(
+          ({ selected, name }) =>
+            selected && name.toLowerCase().includes(this.search)
+        ) // TODO: lowercase before
+        .withAllRecursive()
+        .orderBy("name")
+        .get();
+    },
   },
 
   methods: {
@@ -91,9 +107,9 @@ export default {
     },
 
     unselect() {
-      this.selectedRecipes.forEach((recipe) => {
-        this.$store.commit("unselectRecipe", recipe);
-        this.selectedRecipes.delete(recipe);
+      this.selectedRecipes.forEach((objectId) => {
+        Recipe.update({ where: objectId, data: { selected: false } });
+        this.selectedRecipes.delete(objectId);
       });
     },
   },
