@@ -99,7 +99,7 @@ export default {
 
     onSelect() {
       this.selectedRecipes.forEach((objectId) => {
-        Recipe.update({ where: objectId, data: { selected: true } });
+        Recipe.select(objectId);
         this.selectedRecipes.delete(objectId);
       });
     },

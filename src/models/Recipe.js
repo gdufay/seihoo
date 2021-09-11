@@ -1,5 +1,5 @@
 import { Model } from "@vuex-orm/core";
-import { createPointer } from "../utils/utils";
+import { createPointer, getRandomInt } from "../utils/utils";
 import Ingredient from "./Ingredient";
 import IngredientRecipe from "./IngredientRecipe";
 
@@ -77,5 +77,34 @@ export default class Recipe extends Model {
                 return { objectId, name, frequency, ingredients: ingredientsToModel(ingredients) }
             }
         })
+    }
+
+    static select(objectId) {
+        this.update({
+            where: objectId,
+            data: { selected: true },
+        })
+    }
+
+    static unselect(objectId) {
+        this.update({
+            where: objectId,
+            data: { selected: false },
+        })
+    }
+
+    static selectRandom(rand = 0) {
+        const recipes = this.query().where("selected", false).get();
+        const number = Math.min(rand, recipes.length);
+
+        for (let i = 0; i < number; ++i) {
+            const random = getRandomInt(0, recipes.length);
+
+            this.update({
+                where: recipes[random].objectId,
+                data: { selected: true }
+            });
+            recipes.splice(random, 1);
+        }
     }
 }

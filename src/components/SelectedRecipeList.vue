@@ -81,21 +81,17 @@ export default {
   },
 
   methods: {
-    generateRandom() {
-      this.$prompt(
-        "Please input the number of recipe you want",
-        "Number of recipes",
-        {
-          inputType: "number",
-          inputErrorMessage: "Invalid number",
-        }
-      )
-        .then(({ value }) =>
-          this.$store.dispatch("generateRandom", parseInt(value, 10) || 0)
-        )
-        .catch(() =>
-          this.$message({ type: "info", message: "Random canceled" })
+    async generateRandom() {
+      try {
+        const { value } = await this.$prompt(
+          "Please input the number of recipe you want",
+          "Number of recipes",
+          { inputType: "number", inputErrorMessage: "Invalid number" }
         );
+        Recipe.selectRandom(parseInt(value, 10));
+      } catch (e) {
+        this.$message({ type: "info", message: "Random canceled" });
+      }
     },
 
     selectRecipe(value, objectId) {
@@ -108,7 +104,7 @@ export default {
 
     unselect() {
       this.selectedRecipes.forEach((objectId) => {
-        Recipe.update({ where: objectId, data: { selected: false } });
+        Recipe.unselect(objectId);
         this.selectedRecipes.delete(objectId);
       });
     },
