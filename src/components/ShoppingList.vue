@@ -3,7 +3,16 @@
     <div class="container">
       <div class="header">
         <h2 class="title">Shopping List</h2>
+
         <el-button
+          v-if="selectedIngredients.size"
+          plain
+          type="info"
+          @click="onRemove"
+          >REMOVE</el-button
+        >
+        <el-button
+          v-else
           plain
           type="info"
           @click="download"
@@ -13,14 +22,19 @@
       </div>
 
       <div class="content">
-        <ingredient-item
+        <div
           v-for="{ name, quantity, unit } in ingredients"
           :key="name"
-          :name="name"
-          :quantity="quantity"
-          :unit="unit"
-          class="ingredient"
-        ></ingredient-item>
+          class="item"
+        >
+          <el-checkbox @change="onSelect($event, name)"></el-checkbox>
+          <ingredient-item
+            :name="name"
+            :quantity="quantity"
+            :unit="unit"
+            class="ingredient"
+          ></ingredient-item>
+        </div>
       </div>
     </div>
   </section>
@@ -40,6 +54,7 @@ export default {
   data() {
     return {
       ingredients: [],
+      selectedIngredients: new Set(),
     };
   },
 
@@ -67,9 +82,35 @@ export default {
     download() {
       generateShoppingList(this.ingredients);
     },
+
+    onSelect(value, name) {
+      if (value) {
+        this.selectedIngredients.add(name);
+      } else {
+        this.selectedIngredients.delete(name);
+      }
+    },
+
+    onRemove() {
+      this.selectedIngredients.forEach((ingredientName) => {
+        const index = this.ingredients.findIndex(
+          ({ name }) => name === ingredientName
+        );
+
+        this.ingredients.splice(index, 1);
+      });
+      this.selectedIngredients.clear();
+    },
   },
 };
 </script>
 
 <style>
+.item {
+  padding: 12px 24px;
+}
+
+.item .el-checkbox {
+  float: left;
+}
 </style>
