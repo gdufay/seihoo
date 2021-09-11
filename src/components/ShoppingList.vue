@@ -50,13 +50,16 @@ export default {
   },
 
   watch: {
-    recipes(newRecipes) {
-      const map = recipesToShoppingMap(newRecipes);
+    recipes: {
+      handler(newRecipes) {
+        const map = recipesToShoppingMap(newRecipes);
 
-      this.ingredients = Array.from(map, ([name, value]) => ({
-        name,
-        ...value,
-      })).sort((a, b) => (a.type < b.type ? -1 : 1));
+        this.ingredients = Array.from(map, ([name, value]) => ({
+          name,
+          ...value,
+        })).sort((a, b) => (a.type < b.type ? -1 : 1));
+      },
+      immediate: true,
     },
   },
 

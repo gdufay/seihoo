@@ -90,31 +90,32 @@ export default {
     return this.initialState();
   },
 
-  created() {
-    if (this.id) {
-      this.findAndSet(this.id);
-    }
-  },
-
   computed: {
     editedQuantity() {
-      return this.edited !== null ? this.form.ingredients[this.edited].quantity : null;
+      return this.edited !== null
+        ? this.form.ingredients[this.edited].quantity
+        : null;
     },
 
     editedIngredient() {
-      return this.edited !== null ? this.form.ingredients[this.edited].ingredient : null;
+      return this.edited !== null
+        ? this.form.ingredients[this.edited].ingredient
+        : null;
     },
   },
 
   watch: {
-    $route({ params }) {
-      this.resetState();
+    $route: {
+      handler({ params }) {
+        this.resetState();
 
-      if (!params.id) {
-        return;
-      }
+        if (!params.id) {
+          return;
+        }
 
-      this.findAndSet(params.id);
+        this.findAndSet(params.id);
+      },
+      immediate: true,
     },
   },
 
