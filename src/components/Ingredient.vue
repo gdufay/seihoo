@@ -16,9 +16,7 @@
     </div>
 
     <el-dropdown trigger="click" @command="handleCommand">
-      <el-icon class="ingredient__meta">
-        <more-filled />
-      </el-icon>
+      <el-button type="text">...</el-button>
 
       <template #dropdown>
         <el-dropdown-menu>
@@ -31,7 +29,6 @@
 </template>
 
 <script>
-import { MoreFilled } from "@element-plus/icons";
 import { ingredientType } from "../utils/utils";
 import { Unit } from '../models';
 
@@ -40,10 +37,6 @@ const REMOVE_COMMAND = "remove";
 
 export default {
   name: "ingredient",
-
-  components: {
-    MoreFilled,
-  },
 
   props: {
     ingredient: {

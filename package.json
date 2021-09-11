@@ -10,7 +10,6 @@
     "lint:fix": "eslint src --fix"
   },
   "dependencies": {
-    "@element-plus/icons": "^0.0.11",
     "@vuex-orm/core": "^0.36.4",
     "@vuex-orm/plugin-axios": "^0.9.4",
     "axios": "^0.21.4",
