@@ -17,7 +17,7 @@
           class="search"
           placeholder="search"
           prefix-icon="el-icon-search"
-          v-model="search"
+          v-model="searchQuery"
         ></el-input>
       </div>
 
@@ -29,7 +29,10 @@
           class="recipe"
         >
           <template #title>
-            <el-checkbox @change="onSelectRecipe($event, recipe.objectId)" class="capitalize">
+            <el-checkbox
+              @change="onSelectRecipe($event, recipe.objectId)"
+              class="capitalize"
+            >
               {{ recipe.name }}
               <el-tag type="primary" effect="dark" size="mini">
                 {{ recipe.frequency }}
@@ -63,30 +66,38 @@
 </template>
 
 <script>
+import { computed } from "vue";
 import { Recipe } from "../models";
 import IngredientItem from "./IngredientItem.vue";
+import useModelNameSearch from "../composables/useModelNameSearch";
 
 export default {
   name: "recipe-list",
 
   components: { IngredientItem },
 
+  setup() {
+    const recipes = computed(() =>
+      Recipe.query()
+        .where("selected", false)
+        .withAllRecursive()
+        .orderBy("name")
+        .get()
+    );
+    const { searchQuery, modelsMatchingSearchQuery } =
+      useModelNameSearch(recipes);
+
+    return {
+      recipes: modelsMatchingSearchQuery,
+      searchQuery,
+    };
+  },
+
   data() {
     return {
       activeRecipes: [],
       selectedRecipes: new Set(),
-      search: "",
     };
-  },
-
-  computed: {
-    recipes() {
-      return Recipe.query()
-        .where(({ selected, name }) => !selected && name.includes(this.search))
-        .withAllRecursive()
-        .orderBy("name")
-        .get();
-    },
   },
 
   methods: {

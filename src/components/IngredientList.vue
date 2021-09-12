@@ -14,7 +14,8 @@
         ></el-input>
       </div>
 
-      <div class="content" v-infinite-scroll="load">
+      <!--div class="content" v-infinite-scroll="load"-->
+      <div class="content">
         <ingredient
           v-for="ingredient in ingredients"
           :key="ingredient.objectId"
@@ -36,9 +37,11 @@
 </template>
 
 <script>
+import { computed } from "vue";
 import Ingredient from "./Ingredient.vue";
 import { Ingredient as Ingredients } from "../models";
 import IngredientDialog from "./IngredientDialog.vue";
+import useModelNameSearch from "../composables/useModelNameSearch";
 
 export default {
   name: "ingredient-list",
@@ -50,20 +53,21 @@ export default {
       dialogFormVisible: false,
       ingredientEdited: null, // only save objectId
       loading: false,
-      searchQuery: "",
-      limit: 20,
+      // limit: 20,
     };
   },
 
-  computed: {
-    ingredients() {
-      return Ingredients.query()
-        .with("unit")
-        .where("name", (value = "") => value.includes(this.searchQuery))
-        .limit(this.limit)
-        .orderBy("name")
-        .get();
-    },
+  setup() {
+    const ingredients = computed(() =>
+      Ingredients.query().with("unit").orderBy("name").get()
+    );
+    const { searchQuery, modelsMatchingSearchQuery } =
+      useModelNameSearch(ingredients);
+
+    return {
+      ingredients: modelsMatchingSearchQuery,
+      searchQuery,
+    };
   },
 
   methods: {
@@ -123,9 +127,11 @@ export default {
       this.dialogFormVisible = true;
     },
 
+    /*
     load() {
       this.limit += 20;
     },
+    */
   },
 };
 </script>
