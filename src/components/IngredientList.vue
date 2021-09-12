@@ -24,31 +24,26 @@
         ></ingredient>
       </div>
 
-      <el-dialog
-        title="Add ingredient"
-        v-model="dialogFormVisible"
-        destroy-on-close
-      >
-        <ingredient-form
-          @cancel="onCancel"
-          @submit="onSubmit"
-          :ingredient="ingredientEdited"
-          v-loading="loading"
-        ></ingredient-form>
-      </el-dialog>
+      <ingredient-dialog
+        :ingredient="ingredientEdited"
+        :show="dialogFormVisible"
+        :loading="loading"
+        @cancel="onCancel"
+        @submit="onSubmit"
+      ></ingredient-dialog>
     </div>
   </section>
 </template>
 
 <script>
 import Ingredient from "./Ingredient.vue";
-import IngredientForm from "./IngredientForm.vue";
 import { Ingredient as Ingredients } from "../models";
+import IngredientDialog from "./IngredientDialog.vue";
 
 export default {
   name: "ingredient-list",
 
-  components: { Ingredient, IngredientForm },
+  components: { Ingredient, IngredientDialog },
 
   data() {
     return {
@@ -63,6 +58,7 @@ export default {
   computed: {
     ingredients() {
       return Ingredients.query()
+        .with("unit")
         .where("name", (value = "") => value.includes(this.searchQuery))
         .limit(this.limit)
         .orderBy("name")
@@ -82,7 +78,7 @@ export default {
       try {
         await Ingredients.add(formIngredient);
         this.$message({ type: "success", message: "Adding succesful" });
-        this.dialogFormVisible = false;
+        this.onCancel();
       } catch (e) {
         this.$message({ type: "error", message: "Ohoh... A problem occured" });
       }
@@ -96,7 +92,7 @@ export default {
       try {
         await Ingredients.edit(this.ingredientEdited.objectId, formIngredient);
         this.$message({ type: "success", message: "Editing succesful" });
-        this.dialogFormVisible = false;
+        this.onCancel();
       } catch (e) {
         this.$message({ type: "error", message: "Ohoh... A problem occured" });
       }
