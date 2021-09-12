@@ -54,7 +54,7 @@
 </template>
 
 <script>
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { Recipe } from "../models";
 import IngredientItem from "./IngredientItem.vue";
 import useModelNameSearch from "../composables/useModelNameSearch";
@@ -75,16 +75,14 @@ export default {
     const { searchQuery, modelsMatchingSearchQuery } =
       useModelNameSearch(recipes);
 
+    const activeRecipes = ref([]);
+    const selectedRecipes = ref(new Set())
+
     return {
       recipes: modelsMatchingSearchQuery,
       searchQuery,
-    };
-  },
-
-  data() {
-    return {
-      activeRecipes: [],
-      selectedRecipes: new Set(),
+      activeRecipes,
+      selectedRecipes,
     };
   },
 

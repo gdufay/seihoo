@@ -4,15 +4,14 @@
       <div class="header">
         <h2 class="title">Recipes</h2>
 
-        <template v-if="selectedRecipes.size">
-          <el-button-group>
-            <el-button plain type="info" @click="onSelect">SELECT</el-button>
-            <el-button plain type="info" @click="onRemove">REMOVE</el-button>
-          </el-button-group>
-        </template>
-        <el-button v-else plain type="info" @click="onAdd"
-          >ADD RECIPE</el-button
-        >
+        <el-button-group v-if="selectedRecipes.size">
+          <el-button plain type="info" @click="onSelect">SELECT</el-button>
+          <el-button plain type="info" @click="onRemove">REMOVE</el-button>
+        </el-button-group>
+        <el-button v-else plain type="info" @click="onAdd">
+          ADD RECIPE
+        </el-button>
+
         <el-input
           class="search"
           placeholder="search"
@@ -66,7 +65,7 @@
 </template>
 
 <script>
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { Recipe } from "../models";
 import IngredientItem from "./IngredientItem.vue";
 import useModelNameSearch from "../composables/useModelNameSearch";
@@ -87,16 +86,14 @@ export default {
     const { searchQuery, modelsMatchingSearchQuery } =
       useModelNameSearch(recipes);
 
+    const activeRecipes = ref([]);
+    const selectedRecipes = ref(new Set());
+
     return {
       recipes: modelsMatchingSearchQuery,
       searchQuery,
-    };
-  },
-
-  data() {
-    return {
-      activeRecipes: [],
-      selectedRecipes: new Set(),
+      activeRecipes,
+      selectedRecipes,
     };
   },
 
