@@ -61,6 +61,7 @@
         @save="onSave"
         :ingredient="editedIngredient"
         :quantity="editedQuantity"
+        :filter="filter"
       ></ingredient-recipe-form>
     </el-form-item>
 
@@ -101,6 +102,10 @@ export default {
       return this.edited !== null
         ? this.form.ingredients[this.edited].ingredient
         : null;
+    },
+
+    filter() {
+      return this.form.ingredients.map(({ ingredient }) => ingredient.name);
     },
   },
 
