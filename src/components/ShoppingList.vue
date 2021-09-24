@@ -39,7 +39,6 @@
         <ingredient-recipe-form
           @save="onAdd"
           class="item"
-          :filter="filter"
         ></ingredient-recipe-form>
       </div>
     </div>
@@ -68,10 +67,6 @@ export default {
   computed: {
     recipes() {
       return Recipe.query().where("selected", true).withAllRecursive().get();
-    },
-
-    filter() {
-      return this.ingredients.map(({ name }) => name);
     },
   },
 
@@ -114,7 +109,13 @@ export default {
     },
 
     onAdd({ quantity, ingredient: { name, unit } }) {
-      this.ingredients.push({ quantity, name, unit: unit.name });
+      const newIngredient = { quantity, name, unit: unit.name };
+      const index = this.ingredients.findIndex(
+        (ingredient) => ingredient.name === name
+      );
+
+      if (index !== -1) this.ingredients.splice(index, 1, newIngredient);
+      else this.ingredients.push(newIngredient);
     },
   },
 };
