@@ -39,6 +39,7 @@
         <ingredient-recipe-form
           @save="onAdd"
           class="item"
+          :filter="filter"
         ></ingredient-recipe-form>
       </div>
     </div>
@@ -67,6 +68,10 @@ export default {
   computed: {
     recipes() {
       return Recipe.query().where("selected", true).withAllRecursive().get();
+    },
+
+    filter() {
+      return this.ingredients.map(({ name }) => name);
     },
   },
 

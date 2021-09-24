@@ -41,7 +41,18 @@ import { Ingredient } from "../models";
 export default {
   name: "ingredient-recipe-form",
 
-  props: ["ingredient", "quantity"],
+  props: {
+    ingredient: Object,
+    quantity: Number,
+    filter: {
+      type: Array,
+      default: [],
+    },
+    filterName: {
+      type: String,
+      default: "name",
+    },
+  },
 
   emits: ["save"],
 
@@ -56,7 +67,11 @@ export default {
 
   computed: {
     ingredients() {
-      return Ingredient.query().with("unit").orderBy("name").get();
+      return Ingredient.query()
+        .where(this.filterName, (value) => !this.filter.includes(value))
+        .with("unit")
+        .orderBy("name")
+        .get();
     },
   },
 
