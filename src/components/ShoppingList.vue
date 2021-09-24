@@ -35,21 +35,27 @@
             class="ingredient"
           ></ingredient-item>
         </div>
+
+        <ingredient-recipe-form
+          @save="onAdd"
+          class="item"
+        ></ingredient-recipe-form>
       </div>
     </div>
   </section>
 </template>
 
 <script>
-import IngredientItem from "./IngredientItem.vue";
 import { generateShoppingList } from "@/utils/pdf";
 import { Recipe } from "../models";
 import { recipesToShoppingMap } from "../utils/utils";
+import IngredientItem from "./IngredientItem.vue";
+import IngredientRecipeForm from "./IngredientRecipeForm.vue";
 
 export default {
   name: "shopping-list",
 
-  components: { IngredientItem },
+  components: { IngredientItem, IngredientRecipeForm },
 
   data() {
     return {
@@ -100,6 +106,10 @@ export default {
         this.ingredients.splice(index, 1);
       });
       this.selectedIngredients.clear();
+    },
+
+    onAdd({ quantity, ingredient: { name, unit } }) {
+      this.ingredients.push({ quantity, name, unit: unit.name });
     },
   },
 };
