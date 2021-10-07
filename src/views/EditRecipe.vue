@@ -77,7 +77,7 @@
 <script>
 import IngredientItem from "../components/IngredientItem.vue";
 import IngredientRecipeForm from "../components/IngredientRecipeForm.vue";
-import { Recipe } from "../models";
+import { Recipe, User } from "../models";
 import { frequencies } from "../utils/utils";
 
 export default {
@@ -146,7 +146,9 @@ export default {
       if (this.id) {
         Recipe.edit(this.id, this.form);
       } else {
-        Recipe.add(this.form);
+        const userId = User.query().first().objectId;
+
+        Recipe.add(userId, this.form);
       }
 
       this.$router.back();

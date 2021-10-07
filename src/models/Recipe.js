@@ -29,6 +29,10 @@ export default class Recipe extends Model {
 
                     return ({ objectId, name, frequency, ingredients: pivot });
                 });
+            },
+            headers: {
+                "X-Parse-Session-Token": window.localStorage.getItem("sessionToken"),
+                ...this.globalApiConfig.headers
             }
         })
     }
@@ -43,12 +47,13 @@ export default class Recipe extends Model {
         })
     }
 
-    static add({ name, frequency, ingredients }) {
+    static add(userId, { name, frequency, ingredients }) {
         const nameLowered = name.toLowerCase();
         const recipe = {
             name: nameLowered,
             frequency,
             ingredients: ingredients.map(({ ingredient, quantity }) => ({ quantity, ingredient: createPointer("Ingredient", ingredient.objectId) })),
+            ACL: { [userId]: { read: true, write: true }, "*": {} }
         }
 
         return this.api().post(`/classes/Recipe`, recipe, {
