@@ -2,7 +2,7 @@ import { createLogger, createStore } from 'vuex';
 import VuexORM from '@vuex-orm/core';
 import VuexOrmAxios from "@vuex-orm/plugin-axios";
 import axios from 'axios';
-import { Ingredient, Recipe, IngredientRecipe, Unit } from "../models";
+import { Ingredient, Recipe, IngredientRecipe, Unit, User } from "../models";
 
 const debug = process.env.NODE_ENV !== "production";
 
@@ -22,6 +22,7 @@ database.register(Recipe);
 database.register(IngredientRecipe);
 database.register(Ingredient);
 database.register(Unit);
+database.register(User);
 
 const plugins = [VuexORM.install(database)];
 

@@ -6,11 +6,25 @@
 </template>
 
 <script>
+import { User } from "./models";
+
 export default {
   name: "App",
 
   mounted() {
-    this.$store.dispatch("initApp");
+    const sessionToken = window.localStorage.getItem("sessionToken");
+
+    if (sessionToken) {
+      User.current(sessionToken)
+        .then(() => this.$store.dispatch("initApp"))
+        .catch(() => {
+          window.localStorage.removeItem("sessionToken");
+          this.$router.replace("/login");
+        });
+    } else {
+      window.localStorage.removeItem("sessionToken");
+      this.$router.replace("/login");
+    }
   },
 };
 </script>

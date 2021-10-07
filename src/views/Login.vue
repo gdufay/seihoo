@@ -1,5 +1,10 @@
 <template>
-  <el-form ref="form" :model="form" :rules="rules" v-loading.fullscreen.lock="loading">
+  <el-form
+    ref="form"
+    :model="form"
+    :rules="rules"
+    v-loading.fullscreen.lock="loading"
+  >
     <h1 class="form-header">Please sign in</h1>
 
     <el-form-item prop="username" :error="loginError">
@@ -24,7 +29,7 @@
 </template>
 
 <script>
-import FetchWrapper from "../utils/FetchWrapper";
+import { User } from "../models";
 
 export default {
   name: "Login",
@@ -54,26 +59,23 @@ export default {
 
   methods: {
     onSubmit(formName) {
-      this.$refs[formName].validate((valid) => {
+      this.$refs[formName].validate(async (valid) => {
         if (valid) {
           this.loading = true;
 
-          const username = encodeURIComponent(this.form.username);
-          const password = encodeURIComponent(this.form.password);
+          try {
+            const { username, password } = this.form;
+            const { response: { data } } = await User.login(username, password);
 
-          new FetchWrapper(
-            `https://parseapi.back4app.com/login?username=${username}&password=${password}`
-          )
-            .fetch()
-            .then(({ sessionToken }) => {
-              window.localStorage.setItem("sessionToken", sessionToken);
-              this.$router.replace("/");
-            })
-            .catch((e) => {
-              this.loginError = "";
-              this.loginError = e.message;
-              this.loading = false;
-            });
+            window.localStorage.setItem("sessionToken", data.sessionToken);
+            this.$store.dispatch("initApp");
+            this.$router.replace("/");
+          } catch (e) {
+            // TODO: catch error before to have bad username/password
+            this.loginError = e.message;
+          }
+
+          this.loading = false;
         }
       });
     },
